@@ -4,6 +4,12 @@
 
 一款面向孩子的 AI 3D 创作工具，让孩子用说话把日常经历和奇思妙想搭成可以互动、修改和保存的世界。
 
+## 演示视频
+
+[▶ 打开「小小宇宙」Demo 视频](design/小小宇宙-演示剪辑.mp4)
+
+[下载 MP4](https://github.com/yangliddx-hue/shipitsunday-talktobuildlegao/raw/refs/heads/main/design/%E5%B0%8F%E5%B0%8F%E5%AE%87%E5%AE%99-%E6%BC%94%E7%A4%BA%E5%89%AA%E8%BE%91.mp4)
+
 ## 运行
 
 ```bash
