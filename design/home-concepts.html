@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小小宇宙 · 首页设计方案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink: #1f2a44; --cream: #fff7e8; --sun: #ffc83d; --coral: #ff7a59; --mint: #7fd8b0; --sky: #8fd3ff; --lilac: #b9a6ff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Noto Sans SC", sans-serif; color: var(--ink); background: #e9e4da; }
+  .fun { font-family: "ZCOOL KuaiLe", "Noto Sans SC", sans-serif; font-weight: 400; }
+
+  /* ---------- 方案切换 ---------- */
+  .switch { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; gap: 6px; padding: 6px; background: rgba(255,255,255,.9);
+    border-radius: 999px; box-shadow: 0 6px 24px rgba(0,0,0,.15); backdrop-filter: blur(8px); }
+  .switch button { border: none; background: none; padding: 8px 16px; border-radius: 999px; font: 700 13px "Noto Sans SC"; color: #667; cursor: pointer; }
+  .switch button.on { background: var(--ink); color: #fff; }
+  .concept { display: none; min-height: 100vh; position: relative; overflow: hidden; }
+  .concept.on { display: block; }
+  .note { position: fixed; right: 16px; bottom: 16px; z-index: 50; max-width: 300px; background: rgba(31,42,68,.92); color: #e8ecff; border-radius: 14px; padding: 12px 14px;
+    font-size: 12px; line-height: 1.7; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+  .note b { color: var(--sun); display: block; margin-bottom: 2px; font-size: 13px; }
+
+  /* =========================================================
+     方案 A：一颗会长大的小星球（温暖、玩具感）
+     ========================================================= */
+  #A { background: radial-gradient(1200px 700px at 70% 30%, #ffe7b8 0%, transparent 60%), linear-gradient(180deg, #fff6e4, #ffe9d2); }
+  #A .wrap { max-width: 1200px; margin: 0 auto; padding: 90px 40px 60px; }
+  #A .hero { display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 30px; min-height: 76vh; }
+  #A .logo { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; }
+  #A .logo i { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2, transparent 40%), linear-gradient(135deg, var(--coral), var(--sun));
+    box-shadow: inset -5px -5px 0 rgba(0,0,0,.08); position: relative; }
+  #A .logo i::after { content: ''; position: absolute; inset: 12px -6px; border: 3px solid var(--ink); border-radius: 50%; transform: rotate(-20deg); border-color: var(--ink) transparent transparent; }
+  #A h1 { font-size: clamp(48px, 7vw, 92px); line-height: 1.05; margin: 22px 0 18px; letter-spacing: 2px; }
+  #A h1 span { color: var(--coral); }
+  #A .slogan { font-size: 24px; line-height: 1.6; color: #5a4a3a; }
+  #A .slogan em { font-style: normal; background: linear-gradient(transparent 60%, #ffd56b 60%); }
+  #A .cta { margin-top: 34px; display: flex; gap: 14px; align-items: center; }
+  .btn { border: none; cursor: pointer; font: 900 20px "Noto Sans SC"; border-radius: 999px; padding: 18px 34px; transition: transform .15s; }
+  .btn:active { transform: translateY(3px); }
+  .btn.main { background: var(--coral); color: #fff; box-shadow: 0 6px 0 #d9532f, 0 14px 30px rgba(255,122,89,.35); }
+  .btn.ghost { background: #fff; color: var(--ink); box-shadow: 0 5px 0 #e5d8c4; font-size: 16px; padding: 14px 24px; }
+  /* 星球舞台 */
+  #A .stage { position: relative; height: 560px; }
+  #A .planet { position: absolute; left: 50%; top: 56%; width: 380px; height: 380px; transform: translate(-50%, -50%); border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b9f0a0, #7cc96a 55%, #5aa852); box-shadow: inset -30px -30px 0 rgba(0,0,0,.08), 0 40px 60px -20px rgba(90,140,60,.45); }
+  #A .ring { position: absolute; left: 50%; top: 56%; width: 560px; height: 140px; transform: translate(-50%, -50%) rotate(-12deg); border: 10px solid #ffd56b; border-radius: 50%;
+    border-top-color: transparent; border-left-color: transparent; opacity: .9; }
+  #A .orbit { position: absolute; left: 50%; top: 56%; width: 380px; height: 380px; transform: translate(-50%, -50%); animation: spin 26s linear infinite; }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  #A .thing { position: absolute; left: 50%; top: 50%; font-size: 52px; transform-origin: 0 0; filter: drop-shadow(0 6px 4px rgba(0,0,0,.15)); }
+  #A .thing span { display: inline-block; transform: translate(-50%, -100%) scale(0); animation: pop .6s cubic-bezier(.2,1.8,.4,1) forwards; }
+  @keyframes pop { to { transform: translate(-50%, -100%) scale(1); } }
+  #A .bubble { position: absolute; background: #fff; border-radius: 24px; padding: 14px 20px; font-size: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.1); opacity: 0;
+    animation: float-in .5s ease forwards; white-space: nowrap; }
+  #A .bubble::after { content: ''; position: absolute; bottom: -10px; left: 30px; border: 10px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  #A .bubble b { color: var(--coral); }
+  @keyframes float-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  #A .mic { position: absolute; left: 6%; bottom: 40px; width: 74px; height: 74px; border-radius: 50%; background: var(--sun); display: grid; place-items: center; font-size: 32px;
+    box-shadow: 0 6px 0 #e0a826; }
+  #A .mic::before, #A .mic::after { content: ''; position: absolute; inset: -10px; border: 3px solid var(--sun); border-radius: 50%; animation: ping 1.8s infinite; }
+  #A .mic::after { animation-delay: .9s; }
+  @keyframes ping { from { transform: scale(.8); opacity: .8; } to { transform: scale(1.5); opacity: 0; } }
+  /* 价值观 */
+  #A .values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 30px 0 70px; }
+  #A .value { background: #fff; border-radius: 28px; padding: 26px; box-shadow: 0 8px 0 #f0dfc4; position: relative; }
+  #A .value .ic { font-size: 40px; }
+  #A .value h3 { font-size: 24px; margin: 10px 0 6px; }
+  #A .value p { color: #7a6a5a; line-height: 1.7; font-size: 15px; }
+  #A .sec-title { font-size: 34px; margin-bottom: 22px; display: flex; align-items: baseline; gap: 14px; }
+  #A .sec-title small { font: 500 15px "Noto Sans SC"; color: #9a8a7a; }
+  /* 示例 */
+  #A .examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .ex { background: #fff; border-radius: 26px; overflow: hidden; box-shadow: 0 10px 0 #f0dfc4, 0 20px 40px rgba(120,90,40,.1); cursor: pointer; transition: transform .25s; }
+  .ex:hover { transform: translateY(-6px) rotate(-.5deg); }
+  .ex .pic { aspect-ratio: 16/9; background-size: cover; background-position: center; position: relative; }
+  .ex .tag { position: absolute; left: 12px; top: 12px; background: rgba(255,255,255,.92); border-radius: 999px; padding: 4px 12px; font: 700 12px "Noto Sans SC"; }
+  .ex .body { padding: 16px 18px 20px; }
+  .ex .said { font-size: 16px; line-height: 1.6; position: relative; padding-left: 28px; }
+  .ex .said::before { content: '🗣️'; position: absolute; left: 0; top: 0; }
+  .ex .learn { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .ex .learn span { background: #fff3d6; color: #8a6200; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+  .ex .go { margin-top: 12px; font-weight: 900; color: var(--coral); }
+
+  /* =========================================================
+     方案 B：说一句，长一步（像一本打开的绘本，讲清楚怎么玩）
+     ========================================================= */
+  #B { background: #fdfbf6; background-image: radial-gradient(#e9e2d3 1px, transparent 1px); background-size: 22px 22px; }
+  #B .wrap { max-width: 1240px; margin: 0 auto; padding: 90px 40px 70px; }
+  #B .top { text-align: center; }
+  #B .logo { font-size: 20px; display: inline-flex; gap: 8px; align-items: center; background: #fff; padding: 8px 18px; border-radius: 999px; box-shadow: 0 4px 0 #ece4d4; }
+  #B h1 { font-size: clamp(40px, 5.6vw, 76px); margin: 22px 0 10px; line-height: 1.15; }
+  #B h1 .big { font-size: 1.25em; color: #2f8cff; display: inline-block; transform: rotate(-3deg); }
+  #B h1 .small { font-size: .7em; color: #ff8a3d; }
+  #B .sub { font-size: 18px; color: #6b6458; }
+  /* 三步演示：说 → 长 → 玩 */
+  #B .demo { margin: 46px auto 0; display: grid; grid-template-columns: 330px 1fr; gap: 26px; align-items: stretch; }
+  #B .chat { background: #fff; border-radius: 28px; padding: 22px; box-shadow: 0 10px 0 #ece4d4; display: flex; flex-direction: column; gap: 14px; }
+  #B .chat h4 { font-size: 15px; color: #9a9080; font-weight: 700; }
+  #B .msg { border-radius: 18px; padding: 12px 16px; font-size: 16px; line-height: 1.55; opacity: 0; transform: translateY(8px); transition: all .4s; }
+  #B .msg.show { opacity: 1; transform: none; }
+  #B .msg.kid { background: #fff1e0; border: 2px solid #ffc58f; align-self: flex-start; }
+  #B .msg.ai { background: #f0ebff; border: 2px solid #cbbcff; align-self: flex-end; font-size: 14px; }
+  #B .screen { position: relative; border-radius: 28px; overflow: hidden; box-shadow: 0 10px 0 #d9d0bd, 0 30px 60px rgba(60,40,10,.15); min-height: 420px; background: #dff2ff; }
+  #B .screen .layer { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity .8s, transform 1.2s; transform: scale(1.06); }
+  #B .screen .layer.show { opacity: 1; transform: none; }
+  #B .screen .card { position: absolute; left: 48%; top: 16%; background: #fff; border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 20px rgba(0,0,0,.15); font-size: 14px;
+    max-width: 230px; opacity: 0; transform: scale(.8); transition: all .35s cubic-bezier(.2,1.6,.4,1); }
+  #B .screen .card.show { opacity: 1; transform: none; }
+  #B .screen .card b { display: block; margin-bottom: 4px; }
+  #B .screen .card em { font-style: normal; background: #fff7e0; border-radius: 8px; padding: 4px 8px; display: block; color: #6b4e00; }
+  #B .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 28px; }
+  #B .step { background: #fff; border-radius: 22px; padding: 18px; box-shadow: 0 6px 0 #ece4d4; display: flex; gap: 12px; align-items: flex-start; border: 3px solid transparent; transition: border-color .3s; }
+  #B .step.on { border-color: #2f8cff; }
+  #B .step .n { flex: none; width: 34px; height: 34px; border-radius: 50%; background: #2f8cff; color: #fff; display: grid; place-items: center; font-size: 18px; }
+  #B .step h5 { font-size: 18px; } #B .step p { font-size: 13px; color: #7a7366; margin-top: 4px; line-height: 1.6; }
+  #B .bar { margin-top: 36px; display: flex; justify-content: center; gap: 14px; }
+  #B .btn.main { background: #2f8cff; box-shadow: 0 6px 0 #1f66c2, 0 14px 30px rgba(47,140,255,.3); }
+  #B .examples { margin-top: 70px; }
+  #B .examples h2 { font-size: 32px; text-align: center; }
+  #B .examples > p { text-align: center; color: #8a8273; margin: 6px 0 24px; }
+  #B .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  #B .ex { box-shadow: 0 10px 0 #ece4d4, 0 20px 40px rgba(60,40,10,.08); }
+  #B .ex:nth-child(1) { transform: rotate(-1.2deg); } #B .ex:nth-child(3) { transform: rotate(1.2deg); }
+  #B .promise { margin-top: 70px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  #B .promise div { text-align: center; padding: 10px; }
+  #B .promise b { display: block; font-size: 22px; margin: 8px 0 4px; } #B .promise span { color: #8a8273; font-size: 14px; line-height: 1.7; }
+  #B .promise i { font-style: normal; font-size: 40px; }
+
+  /* =========================================================
+     方案 C：你的小小宇宙（星空里漂着孩子们创造的世界）
+     ========================================================= */
+  #C { background: radial-gradient(900px 600px at 50% 110%, #8a86c8 0%, transparent 70%), linear-gradient(180deg, #232f6b 0%, #3d4a96 60%, #6f72b8 100%); color: #fff; }
+  #C .stars { position: absolute; inset: 0; pointer-events: none; }
+  #C .stars i { position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%; animation: twinkle 3s infinite ease-in-out; }
+  @keyframes twinkle { 50% { opacity: .2; transform: scale(.5); } }
+  #C .wrap { position: relative; max-width: 1240px; margin: 0 auto; padding: 90px 40px 60px; text-align: center; }
+  #C .logo { font-size: 22px; opacity: .9; }
+  #C h1 { font-size: clamp(54px, 8vw, 110px); margin: 16px 0 6px; text-shadow: 0 8px 0 rgba(0,0,0,.18); letter-spacing: 4px; }
+  #C h1 span { background: linear-gradient(90deg, #ffd56b, #ff9ac2, #8fe3ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #C .slogan { font-size: 24px; opacity: .92; }
+  #C .slogan b { color: #ffd56b; font-size: 1.3em; }
+  /* 漂浮的世界 */
+  #C .space { position: relative; height: 470px; margin-top: 10px; }
+  #C .world { position: absolute; border-radius: 50%; background-size: cover; background-position: center; border: 6px solid rgba(255,255,255,.85);
+    box-shadow: 0 0 0 10px rgba(255,255,255,.12), 0 30px 60px rgba(10,10,40,.5); cursor: pointer; animation: bob 6s ease-in-out infinite; transition: transform .3s; }
+  #C .world:hover { transform: scale(1.06); }
+  @keyframes bob { 50% { translate: 0 -14px; } }
+  #C .world .lab { position: absolute; left: 50%; bottom: -46px; transform: translateX(-50%); white-space: nowrap; background: rgba(255,255,255,.95); color: var(--ink);
+    border-radius: 999px; padding: 6px 14px; font: 700 14px "Noto Sans SC"; }
+  #C .world .lab small { color: #8a7bd8; font-weight: 500; }
+  #C .new { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 190px; height: 190px; border-radius: 50%; border: 4px dashed rgba(255,255,255,.7);
+    display: grid; place-items: center; cursor: pointer; background: rgba(255,255,255,.08); }
+  #C .new div { font-size: 22px; line-height: 1.4; } #C .new big { display: block; font-size: 54px; line-height: 1; margin-bottom: 4px; }
+  #C .new::after { content: ''; position: absolute; inset: -18px; border-radius: 50%; border: 2px solid rgba(255,213,107,.6); animation: ping 2.4s infinite; }
+  #C .say { margin: 40px auto 0; width: min(640px, 90vw); display: flex; gap: 10px; background: #fff; border-radius: 999px; padding: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+  #C .say .m { width: 54px; height: 54px; border-radius: 50%; background: #ffd56b; display: grid; place-items: center; font-size: 24px; flex: none; }
+  #C .say input { flex: 1; border: none; outline: none; font: 500 17px "Noto Sans SC"; color: var(--ink); background: none; }
+  #C .say button { border: none; border-radius: 999px; background: #ff7a59; color: #fff; font: 900 17px "Noto Sans SC"; padding: 0 26px; cursor: pointer; }
+  #C .chips { margin-top: 14px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  #C .chips span { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.3); border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer; }
+  #C .chips span:hover { background: rgba(255,255,255,.25); }
+  #C .belief { margin-top: 70px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: left; }
+  #C .belief div { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 24px; padding: 22px; backdrop-filter: blur(6px); }
+  #C .belief i { font-style: normal; font-size: 30px; } #C .belief b { display: block; font-size: 20px; margin: 8px 0 6px; }
+  #C .belief span { opacity: .8; line-height: 1.7; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="switch">
+  <button data-c="A" class="on">方案 A · 会长大的小星球</button>
+  <button data-c="B">方案 B · 说一句，长一步</button>
+  <button data-c="C">方案 C · 我的小小宇宙</button>
+</div>
+
+<!-- ===================== 方案 A ===================== -->
+<section class="concept on" id="A">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="logo fun"><i></i>小小宇宙</div>
+        <h1 class="fun">小小的你<br/>也能创造<span>大大的世界</span></h1>
+        <p class="slogan">不用画画，不用打字。<em>说出你脑袋里的想法</em>，<br/>它就会在你的小星球上长出来。</p>
+        <div class="cta">
+          <button class="btn main fun">🎙️ 开始创造我的世界</button>
+          <button class="btn ghost">看看别人搭了什么 ↓</button>
+        </div>
+      </div>
+      <div class="stage" id="A-stage">
+        <div class="ring"></div>
+        <div class="planet"></div>
+        <div class="orbit" id="A-orbit"></div>
+        <div class="mic">🎙️</div>
+      </div>
+    </div>
+
+    <div class="values">
+      <div class="value"><div class="ic">🗣️</div><h3 class="fun">你说，世界听</h3><p>孩子用自己的话描述，AI 只负责把它变出来，从不替孩子编故事。</p></div>
+      <div class="value"><div class="ic">🔍</div><h3 class="fun">点一点，学一点</h3><p>每只动物、每朵云都能点。它会动、会说话，还会告诉你一个真实的小知识。</p></div>
+      <div class="value"><div class="ic">🏡</div><h3 class="fun">一直属于你</h3><p>世界会被好好保存。下次回来接着搭，也可以带爸爸妈妈来参观。</p></div>
+    </div>
+
+    <div class="sec-title fun">小朋友们是这样玩的 <small>点一个，马上进去逛逛</small></div>
+    <div class="examples">
+      <div class="ex"><div class="pic" style="background-image:url(assets/zoo_c.png)"><span class="tag">🦁 动物园</span></div>
+        <div class="body"><p class="said">"我想要一个动物园，狮子要戴红帽子，猴子爬到树上！"</p>
+          <div class="learn"><span>认识动物</span><span>描述颜色</span><span>位置关系</span></div><div class="go fun">进去逛逛 →</div></div></div>
+      <div class="ex"><div class="pic" style="background-image:url(assets/sea_c.png)"><span class="tag">🐠 海边</span></div>
+        <div class="body"><p class="said">"今天去海边玩，海里有好多小鱼，我和爸爸在沙滩上。"</p>
+          <div class="learn"><span>海洋生物</span><span>记录一天</span></div><div class="go fun">进去逛逛 →</div></div></div>
+      <div class="ex"><div class="pic" style="background-image:url(assets/city_c.png)"><span class="tag">🌃 陆家嘴夜景</span></div>
+        <div class="body"><p class="said">"爸爸妈妈带我去看了陆家嘴夜景，有东方明珠，江上有船。"</p>
+          <div class="learn"><span>城市地标</span><span>白天和夜晚</span></div><div class="go fun">进去逛逛 →</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 方案 B ===================== -->
+<section class="concept" id="B">
+  <div class="wrap">
+    <div class="top">
+      <div class="logo fun">🪐 小小宇宙</div>
+      <h1 class="fun"><span class="small">小小的你</span>，也能创造<span class="big">大大的</span>世界</h1>
+      <p class="sub">说一句话，世界就长一步。看看一个 6 岁小朋友是怎么搭出动物园的 👇</p>
+    </div>
+    <div class="demo">
+      <div class="chat" id="B-chat"><h4>小朋友说的话</h4></div>
+      <div class="screen" id="B-screen">
+        <div class="layer" style="background-image:url(assets/zoo.png); background-color:#cfe6a8"></div>
+        <div class="card" id="B-card"><b>🦁 狮子</b><em>💡 只有公狮子才有大鬃毛</em></div>
+      </div>
+    </div>
+    <div class="steps" id="B-steps">
+      <div class="step"><span class="n fun">1</span><div><h5 class="fun">说</h5><p>按住话筒，说出你想要的世界</p></div></div>
+      <div class="step"><span class="n fun">2</span><div><h5 class="fun">长出来</h5><p>你说的东西一样一样长出来</p></div></div>
+      <div class="step"><span class="n fun">3</span><div><h5 class="fun">改一改</h5><p>"要红色的！""放到树上！"</p></div></div>
+      <div class="step"><span class="n fun">4</span><div><h5 class="fun">点一点</h5><p>动物会动，还会讲小知识</p></div></div>
+    </div>
+    <div class="bar"><button class="btn main fun">🎙️ 轮到我了！开始创造</button></div>
+
+    <div class="examples">
+      <h2 class="fun">从一句话开始</h2>
+      <p>不知道说什么？点一个试试，或者照着说一遍</p>
+      <div class="row">
+        <div class="ex"><div class="pic" style="background-image:url(assets/zoo_c.png)"></div><div class="body"><p class="said">"狮子要戴红帽子，猴子爬到树上！"</p><div class="go fun">🦁 试试这个</div></div></div>
+        <div class="ex"><div class="pic" style="background-image:url(assets/sea_c.png)"></div><div class="body"><p class="said">"海里有好多小鱼，我和爸爸在沙滩上。"</p><div class="go fun">🐠 试试这个</div></div></div>
+        <div class="ex"><div class="pic" style="background-image:url(assets/city_c.png)"></div><div class="body"><p class="said">"陆家嘴夜景，有东方明珠，江上有船。"</p><div class="go fun">🌃 试试这个</div></div></div>
+      </div>
+    </div>
+
+    <div class="promise">
+      <div><i>🧒</i><b class="fun">孩子是创作者</b><span>AI 只摆孩子说过的东西，<br/>不替孩子编故事</span></div>
+      <div><i>🌱</i><b class="fun">在玩里学知识</b><span>每样东西都藏着一个<br/>真实、好懂的小知识</span></div>
+      <div><i>💛</i><b class="fun">家长放心</b><span>没有排行榜和打卡，<br/>作品由孩子决定给谁看</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 方案 C ===================== -->
+<section class="concept" id="C">
+  <div class="stars" id="C-stars"></div>
+  <div class="wrap">
+    <div class="logo fun">🪐 小小宇宙</div>
+    <h1 class="fun">小小<span>宇宙</span></h1>
+    <p class="slogan fun">小小的你，也能创造 <b>大大的世界</b></p>
+
+    <div class="space">
+      <div class="world" style="left:6%; top:50px; width:230px; height:230px; background-image:url(assets/zoo_c.png); animation-delay:-1s"><span class="lab">🦁 戴帽子的狮子 <small>· 朵朵 6 岁</small></span></div>
+      <div class="world" style="right:6%; top:30px; width:250px; height:250px; background-image:url(assets/city_c.png); animation-delay:-3s"><span class="lab">🌃 陆家嘴夜景 <small>· 乐乐 7 岁</small></span></div>
+      <div class="world" style="left:24%; top:270px; width:150px; height:150px; background-image:url(assets/sea_c.png); animation-delay:-2s"><span class="lab">🐠 海边的一天</span></div>
+      <div class="new"><div class="fun"><big>＋</big>创造我的<br/>小小世界</div></div>
+    </div>
+
+    <div class="say">
+      <span class="m">🎙️</span>
+      <input class="fun" value="" placeholder="说说你想要一个什么样的世界…" />
+      <button class="fun">出发！</button>
+    </div>
+    <div class="chips"><span>🦕 有恐龙的森林</span><span>🍭 糖果做的城堡</span><span>🚀 我住在月亮上</span><span>🐼 和熊猫一起野餐</span></div>
+
+    <div class="belief">
+      <div><i>✨</i><b class="fun">想象力是你的</b><span>世界里的每样东西，都来自你说的话。AI 是你的小帮手，不是作者。</span></div>
+      <div><i>🔭</i><b class="fun">世界会讲故事</b><span>点一点星星、动物、高楼，它们会告诉你关于这个世界的真实小知识。</span></div>
+      <div><i>🌙</i><b class="fun">每个世界都被记住</b><span>你创造的世界都住在你的小小宇宙里，随时回来，随时邀请家人参观。</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="note" id="note"></div>
+
+<script>
+const NOTES = {
+  A: '<b>方案 A · 会长大的小星球</b>温暖奶油色 + 玩具感。首屏右边是一颗慢慢旋转的小星球，孩子的话一句句冒出来，东西一样样"啵"地长到星球上。下面是 3 个价值观卡片 + 3 个示例。<br/>适合：第一眼就懂"说话→长东西"，最亲和。',
+  B: '<b>方案 B · 说一句，长一步</b>像一本打开的绘本，重点讲"怎么玩"。左边是孩子的对话，右边真实画面跟着变化，下面 4 步高亮。示例卡片直接写出"那句话"，孩子可以照着说。<br/>适合：评委 / 家长最快看懂玩法。',
+  C: '<b>方案 C · 我的小小宇宙</b>和产品名最贴合：深蓝星空里漂着其他小朋友创造的世界（星球），中间是"创造我的世界"的入口和输入框，下面是灵感词。<br/>适合：最有记忆点、最有"归属感"，但玩法说明较弱。',
+};
+const note = document.getElementById('note');
+document.querySelectorAll('.switch button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.switch button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.concept').forEach(c => c.classList.toggle('on', c.id === b.dataset.c));
+  note.innerHTML = NOTES[b.dataset.c]; window.scrollTo(0, 0);
+  if (b.dataset.c === 'A') runA(); if (b.dataset.c === 'B') runB();
+});
+note.innerHTML = NOTES.A;
+
+// ---------- A：话一句句冒出来，东西长到星球上 ----------
+let aTimer = [];
+function runA() {
+  aTimer.forEach(clearTimeout); aTimer = [];
+  const orbit = document.getElementById('A-orbit'), stage = document.getElementById('A-stage');
+  orbit.innerHTML = ''; stage.querySelectorAll('.bubble').forEach(b => b.remove());
+  const script = [
+    ['我想要一棵<b>大树</b>', ['🌳', -60]], ['树上有一只<b>小猴子</b>', ['🐒', -35]], ['狮子要戴<b>红帽子</b>！', ['🦁', 10]],
+    ['再来一只<b>长颈鹿</b>', ['🦒', 45]], ['旁边有个<b>小池塘</b>', ['🐸', 90]], ['天上挂着<b>彩虹</b>', ['🌈', 150]], ['还有我的<b>小房子</b>', ['🏠', 210]],
+  ];
+  script.forEach(([text, [emo, ang]], i) => aTimer.push(setTimeout(() => {
+    stage.querySelectorAll('.bubble').forEach(b => b.remove());
+    const b = document.createElement('div'); b.className = 'bubble'; b.innerHTML = '🧒 ' + text;
+    b.style.left = '8%'; b.style.top = '14px'; stage.appendChild(b);
+    const t = document.createElement('div'); t.className = 'thing';
+    t.style.transform = `rotate(${ang}deg) translateY(-190px)`;
+    t.innerHTML = `<span>${emo}</span>`; orbit.appendChild(t);
+  }, 600 + i * 1500)));
+  aTimer.push(setTimeout(runA, 600 + script.length * 1500 + 3000));
+}
+runA();
+
+// ---------- B：对话 + 画面 + 步骤联动 ----------
+let bTimer = [];
+function runB() {
+  bTimer.forEach(clearTimeout); bTimer = [];
+  const chat = document.getElementById('B-chat'), layer = document.querySelector('#B .layer'), card = document.getElementById('B-card'), steps = [...document.querySelectorAll('#B .step')];
+  chat.querySelectorAll('.msg').forEach(m => m.remove()); layer.classList.remove('show'); card.classList.remove('show'); steps.forEach(s => s.classList.remove('on'));
+  const add = (cls, html) => { const m = document.createElement('div'); m.className = 'msg ' + cls; m.innerHTML = html; chat.appendChild(m); requestAnimationFrame(() => m.classList.add('show')); };
+  const seq = [
+    [400, () => { steps[0].classList.add('on'); add('kid', '🧒 我想要一个动物园，有狮子、长颈鹿和大象！'); }],
+    [1800, () => { steps[0].classList.remove('on'); steps[1].classList.add('on'); add('ai', '🪐 动物园来啦！它们都在等你～'); layer.classList.add('show'); }],
+    [4200, () => { steps[1].classList.remove('on'); steps[2].classList.add('on'); add('kid', '🧒 狮子要戴红帽子！猴子爬到树上！'); }],
+    [5600, () => add('ai', '🪐 好神气的狮子！')],
+    [7400, () => { steps[2].classList.remove('on'); steps[3].classList.add('on'); add('kid', '👆 （点了一下狮子）'); card.classList.add('show'); }],
+    [11500, runB],
+  ];
+  seq.forEach(([t, f]) => bTimer.push(setTimeout(f, t)));
+}
+runB();
+
+// ---------- C：星星 ----------
+const stars = document.getElementById('C-stars');
+for (let i = 0; i < 90; i++) { const s = document.createElement('i'); s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 70 + '%'; s.style.animationDelay = -Math.random() * 3 + 's'; s.style.opacity = .4 + Math.random() * .6; stars.appendChild(s); }
+</script>
+</body>
+</html>
