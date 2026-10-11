@@ -6,9 +6,11 @@
 
 ## 演示视频
 
-[▶ 打开「小小宇宙」Demo 视频](design/小小宇宙-演示剪辑.mp4)
+点击下方播放器，观看完整 Demo（约 2 分 9 秒）。
 
-[下载 MP4](https://github.com/yangliddx-hue/shipitsunday-talktobuildlegao/raw/refs/heads/main/design/%E5%B0%8F%E5%B0%8F%E5%AE%87%E5%AE%99-%E6%BC%94%E7%A4%BA%E5%89%AA%E8%BE%91.mp4)
+https://github.com/user-attachments/assets/a28f2e58-87d4-4f1d-afda-633f104936c4
+
+[下载原始高清 MP4](https://github.com/yangliddx-hue/shipitsunday-talktobuildlegao/raw/refs/heads/main/design/%E5%B0%8F%E5%B0%8F%E5%AE%87%E5%AE%99-%E6%BC%94%E7%A4%BA%E5%89%AA%E8%BE%91.mp4)
 
 ## 运行
 
