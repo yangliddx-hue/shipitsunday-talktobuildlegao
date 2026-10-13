@@ -1,0 +1,15 @@
+.env
+project.env
+node_modules/
+.DS_Store
+data/
+.playwright-mcp/
+
+# Local environment variants and development artifacts
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+.claude/
+*.log

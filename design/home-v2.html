@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小小宇宙 · 小小的你也能创造大大的世界</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink: #1f2a44; --night: #232f6b; --sun: #ffd56b; --coral: #ff7a59; --blue: #2f8cff; --cream: #fffaf0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Noto Sans SC", sans-serif; color: var(--ink);
+    /* 整页是一片从宇宙"降落"到地面的天空：深夜蓝 → 黎明紫 → 晨光奶油 */
+    background: linear-gradient(180deg, #1d2760 0%, #2e3a86 16%, #6f72b8 27%, #f3c9c8 33%, #fff1dc 37%, var(--cream) 42%); }
+  .fun { font-family: "ZCOOL KuaiLe", "Noto Sans SC", sans-serif; font-weight: 400; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; position: relative; }
+
+  /* ---------- 顶栏 ---------- */
+  nav { position: sticky; top: 0; z-index: 20; transition: background .3s, box-shadow .3s; }
+  nav.solid { background: rgba(255,250,240,.88); backdrop-filter: blur(10px); box-shadow: 0 2px 14px rgba(60,40,10,.08); }
+  nav.solid .logo { color: var(--ink); } nav.solid .logo .p::after { border-color: var(--ink) var(--ink) transparent; }
+  nav.solid .links a { color: #6b6151; } nav.solid .links a.go { background: var(--ink); color: #fff; }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 24px; color: #fff; text-decoration: none; }
+  .logo .p { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--coral), var(--sun)); position: relative; box-shadow: inset -4px -4px 0 rgba(0,0,0,.12); }
+  .logo .p::after { content: ''; position: absolute; left: -7px; right: -7px; top: 13px; height: 8px; border: 3px solid #fff; border-radius: 50%; transform: rotate(-18deg); border-bottom-color: transparent; }
+  nav .links { display: flex; gap: 8px; }
+  nav .links a { color: #dfe4ff; text-decoration: none; font-size: 14px; padding: 8px 14px; border-radius: 999px; }
+  nav .links a:hover { background: rgba(255,255,255,.12); }
+  nav .links a.go { background: #fff; color: var(--ink); font-weight: 700; }
+
+  /* ---------- 首屏：我的小小宇宙 ---------- */
+  .hero { position: relative; text-align: center; color: #fff; padding: 30px 0 90px; }
+  .stars { position: absolute; inset: -80px 0 0; pointer-events: none; overflow: hidden; }
+  .stars i { position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%; animation: tw 3s infinite ease-in-out; }
+  @keyframes tw { 50% { opacity: .15; transform: scale(.4); } }
+  .shoot { position: absolute; width: 120px; height: 2px; background: linear-gradient(90deg, #fff, transparent); top: 60px; left: 70%; transform: rotate(-20deg); opacity: 0; animation: shoot 6s 2s infinite; }
+  @keyframes shoot { 0% { opacity: 0; translate: 0 0; } 3% { opacity: 1; } 12% { opacity: 0; translate: -340px 120px; } 100% { opacity: 0; } }
+  .hero h1 { font-size: clamp(60px, 9vw, 124px); letter-spacing: 6px; line-height: 1.05; text-shadow: 0 8px 0 rgba(0,0,0,.18); animation: rise .9s cubic-bezier(.2,1.4,.4,1) both; }
+  .hero h1 span { background: linear-gradient(90deg, #ffd56b, #ff9ac2, #8fe3ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero .slogan { font-size: clamp(20px, 2.4vw, 28px); margin-top: 14px; animation: rise .9s .15s both; }
+  .hero .slogan b { color: var(--sun); font-size: 1.35em; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+
+  .space { position: relative; height: 470px; margin-top: 8px; }
+  .world { position: absolute; border-radius: 50%; background-size: cover; background-position: center; border: 6px solid rgba(255,255,255,.9); cursor: pointer;
+    box-shadow: 0 0 0 12px rgba(255,255,255,.1), 0 30px 60px rgba(10,10,40,.45); animation: bob 6s ease-in-out infinite, pop .8s cubic-bezier(.2,1.6,.4,1) both; transition: transform .3s; }
+  .world:hover { transform: scale(1.07); }
+  @keyframes bob { 50% { translate: 0 -14px; } }
+  @keyframes pop { from { scale: 0; } }
+  .world .lab { position: absolute; left: 50%; bottom: -44px; transform: translateX(-50%); white-space: nowrap; background: #fff; color: var(--ink); border-radius: 999px;
+    padding: 6px 14px; font: 700 14px "Noto Sans SC"; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+  .world .lab small { color: #8a7bd8; font-weight: 500; }
+  .new { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border-radius: 50%; border: 4px dashed rgba(255,255,255,.75);
+    display: grid; place-items: center; cursor: pointer; background: radial-gradient(circle, rgba(255,213,107,.18), rgba(255,255,255,.04)); transition: transform .3s; text-decoration: none; color: #fff; }
+  .new:hover { transform: translate(-50%, -50%) scale(1.06); }
+  .new div { font-size: 24px; line-height: 1.35; } .new big { display: block; font-size: 60px; line-height: 1; margin-bottom: 4px; }
+  .new::before, .new::after { content: ''; position: absolute; inset: -16px; border-radius: 50%; border: 2px solid rgba(255,213,107,.6); animation: ping 2.6s infinite; }
+  .new::after { animation-delay: 1.3s; }
+  @keyframes ping { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.35); opacity: 0; } }
+
+  .say { margin: 54px auto 0; width: min(660px, 92vw); display: flex; gap: 10px; background: #fff; border-radius: 999px; padding: 8px; box-shadow: 0 14px 40px rgba(0,0,0,.25); }
+  .say .m { width: 56px; height: 56px; border-radius: 50%; background: var(--sun); display: grid; place-items: center; font-size: 26px; flex: none; position: relative; }
+  .say .m::after { content: ''; position: absolute; inset: -6px; border: 3px solid var(--sun); border-radius: 50%; animation: ping 2s infinite; }
+  .say .typed { flex: 1; text-align: left; align-self: center; font: 500 18px "Noto Sans SC"; color: var(--ink); white-space: nowrap; overflow: hidden; }
+  .say .typed::after { content: '|'; color: var(--coral); animation: blink 1s infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .say button { border: none; border-radius: 999px; background: var(--coral); color: #fff; font: 400 20px "ZCOOL KuaiLe"; padding: 0 28px; cursor: pointer; box-shadow: 0 4px 0 #d9532f; }
+  .chips { margin-top: 16px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .chips span { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 7px 15px; font-size: 14px; cursor: pointer; transition: background .2s; }
+  .chips span:hover { background: rgba(255,255,255,.28); }
+  .scroll-hint { margin-top: 46px; font-size: 14px; opacity: .8; }
+  .scroll-hint i { display: block; font-style: normal; font-size: 22px; animation: down 1.6s infinite; }
+  @keyframes down { 50% { transform: translateY(6px); } }
+
+  /* ---------- 第二屏：说一句，长一步 ---------- */
+  .how { padding: 60px 0 30px; }
+  .how, .examples, .values { scroll-margin-top: 60px; }
+  .sec-head { text-align: center; margin-bottom: 34px; }
+  .sec-head .kicker { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 16px; font: 700 13px "Noto Sans SC"; color: var(--blue); box-shadow: 0 4px 0 #f0e2c8; }
+  .sec-head h2 { font-size: clamp(36px, 4.6vw, 56px); margin-top: 14px; }
+  .sec-head h2 em { font-style: normal; color: var(--blue); }
+  .sec-head p { color: #7a7060; margin-top: 8px; font-size: 17px; }
+  .demo { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+  .chat { background: #fff; border-radius: 28px; padding: 22px; box-shadow: 0 10px 0 #f0e2c8; display: flex; flex-direction: column; gap: 12px; min-height: 440px; }
+  .chat h4 { font-size: 14px; color: #a09583; display: flex; align-items: center; gap: 8px; }
+  .chat h4 .dot { width: 8px; height: 8px; border-radius: 50%; background: #ff5b5b; animation: blink 1s infinite; }
+  .msg { border-radius: 18px; padding: 12px 16px; font-size: 16px; line-height: 1.55; opacity: 0; transform: translateY(8px); transition: all .4s; max-width: 92%; }
+  .msg.show { opacity: 1; transform: none; }
+  .msg.kid { background: #fff1e0; border: 2px solid #ffc58f; align-self: flex-start; }
+  .msg.ai { background: #eef3ff; border: 2px solid #bcd3ff; align-self: flex-end; font-size: 14px; }
+  .msg.tap { background: #f3f0e8; border: 2px dashed #d6cbb4; align-self: flex-start; font-size: 14px; color: #6b6151; }
+  .screen { position: relative; border-radius: 28px; overflow: hidden; box-shadow: 0 10px 0 #e4d6bc, 0 30px 60px rgba(60,40,10,.15); background: #e8f5ff; min-height: 440px; }
+  .screen .empty { position: absolute; inset: 0; display: grid; place-items: center; color: #9aa9b8; font-size: 18px; }
+  .screen .layer { position: absolute; inset: 0; background: url(assets/zoo.png) center/cover; opacity: 0; transform: scale(1.08); transition: opacity .9s, transform 1.4s; }
+  .screen .layer.show { opacity: 1; transform: none; }
+  .screen .empty { transition: opacity .4s; z-index: 1; }
+  .screen:has(.layer.show) .empty { opacity: 0; }
+  .screen .card { position: absolute; left: 33%; top: 22%; background: #fff; border-radius: 16px; padding: 10px 14px; box-shadow: 0 8px 22px rgba(0,0,0,.15); font-size: 14px;
+    opacity: 0; transform: scale(.7); transition: all .4s cubic-bezier(.2,1.6,.4,1); text-align: center; }
+  .screen .card.show { opacity: 1; transform: none; }
+  .screen .card em { font-style: normal; display: block; margin-top: 6px; background: #fff7e0; border-radius: 10px; padding: 5px 10px; color: #6b4e00; }
+  .screen .card small { display: block; color: #a09cb0; font-size: 11px; margin-top: 4px; }
+  .screen .card::after { content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 26px; }
+  .step { background: #fff; border-radius: 22px; padding: 18px; box-shadow: 0 6px 0 #f0e2c8; display: flex; gap: 12px; border: 3px solid transparent; transition: all .3s; }
+  .step.on { border-color: var(--blue); transform: translateY(-4px); }
+  .step .n { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #dfe9ff; color: var(--blue); display: grid; place-items: center; font-size: 19px; transition: all .3s; }
+  .step.on .n { background: var(--blue); color: #fff; }
+  .step h5 { font-size: 19px; } .step p { font-size: 13px; color: #7a7060; margin-top: 4px; line-height: 1.6; }
+
+  /* ---------- 示例 ---------- */
+  .examples { padding: 80px 0 20px; }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .ex { background: #fff; border-radius: 26px; overflow: hidden; box-shadow: 0 10px 0 #f0e2c8, 0 24px 40px rgba(120,90,40,.08); cursor: pointer; transition: transform .25s; }
+  .ex:nth-child(1) { rotate: -1.2deg; } .ex:nth-child(3) { rotate: 1.2deg; }
+  .ex:hover { transform: translateY(-8px); rotate: 0deg; }
+  .ex .pic { aspect-ratio: 16/10; background-size: cover; background-position: center; position: relative; }
+  .ex .tag { position: absolute; left: 12px; top: 12px; background: rgba(255,255,255,.94); border-radius: 999px; padding: 4px 12px; font: 700 12px "Noto Sans SC"; }
+  .ex .by { position: absolute; right: 12px; top: 12px; background: rgba(31,42,68,.7); color: #fff; border-radius: 999px; padding: 4px 10px; font-size: 11px; }
+  .ex .body { padding: 16px 18px 20px; }
+  .ex .said { font-size: 16px; line-height: 1.6; }
+  .ex .said::before { content: '🗣️ '; }
+  .ex .learn { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .ex .learn span { background: #fff3d6; color: #8a6200; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+  .ex .go { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; font: 400 17px "ZCOOL KuaiLe"; color: var(--coral); }
+  .ex .go span { font: 500 13px "Noto Sans SC"; color: #b0a490; }
+
+  /* ---------- 价值观 ---------- */
+  .values { padding: 80px 0 40px; }
+  .vgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .v { border-radius: 28px; padding: 28px 26px; position: relative; overflow: hidden; }
+  .v:nth-child(1) { background: #ffe9d9; } .v:nth-child(2) { background: #e1f3e6; } .v:nth-child(3) { background: #e6e8ff; }
+  .v .ic { font-size: 46px; } .v h3 { font-size: 26px; margin: 12px 0 8px; }
+  .v p { color: #5f5a52; line-height: 1.75; font-size: 15px; }
+  .v .bg { position: absolute; right: -20px; bottom: -30px; font-size: 130px; opacity: .1; }
+
+  /* ---------- 结尾 ---------- */
+  .final { margin: 70px auto 0; text-align: center; padding: 70px 30px 80px; border-radius: 40px 40px 0 0;
+    background: radial-gradient(600px 300px at 50% 0, #6f72b8, transparent 70%), linear-gradient(180deg, #2e3a86, #1d2760); color: #fff; position: relative; overflow: hidden; }
+  .final h2 { font-size: clamp(36px, 5vw, 62px); line-height: 1.25; }
+  .final h2 b { color: var(--sun); }
+  .final .btn { margin-top: 30px; display: inline-block; text-decoration: none; background: var(--coral); color: #fff; font: 400 26px "ZCOOL KuaiLe"; padding: 20px 46px; border-radius: 999px;
+    box-shadow: 0 7px 0 #d9532f, 0 18px 40px rgba(255,122,89,.4); }
+  .final .credit { margin-top: 40px; font-size: 12px; opacity: .5; }
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="wrap">
+  <a class="logo fun" href="#"><span class="p"></span>小小宇宙</a>
+  <div class="links"><a href="#how">怎么玩</a><a href="#examples">看看大家的世界</a><a href="#values">我们相信</a><a class="go" href="#">我的世界 →</a></div>
+</div></nav>
+
+<!-- ================= 首屏：我的小小宇宙 ================= -->
+<header class="hero">
+  <div class="stars" id="stars"><span class="shoot"></span></div>
+  <div class="wrap">
+    <h1 class="fun">小小<span>宇宙</span></h1>
+    <p class="slogan fun">小小的你，也能创造 <b>大大的世界</b></p>
+
+    <div class="space">
+      <div class="world" style="left:4%; top:40px; width:240px; height:240px; background-image:url(assets/zoo_c.png); animation-delay:-1s, .2s"><span class="lab">🦁 戴帽子的狮子 <small>· 朵朵 6 岁</small></span></div>
+      <div class="world" style="right:4%; top:20px; width:260px; height:260px; background-image:url(assets/city_c.png); animation-delay:-3s, .35s"><span class="lab">🌃 陆家嘴夜景 <small>· 乐乐 7 岁</small></span></div>
+      <div class="world" style="left:22%; top:270px; width:150px; height:150px; background-image:url(assets/sea_c.png); animation-delay:-2s, .5s"><span class="lab">🐠 海边的一天 <small>· 小米 5 岁</small></span></div>
+      <a class="new" href="#"><div class="fun"><big>＋</big>创造我的<br/>小小世界</div></a>
+    </div>
+
+    <div class="say">
+      <span class="m">🎙️</span>
+      <span class="typed fun" id="typed"></span>
+      <button>出发！</button>
+    </div>
+    <div class="chips"><span>🦕 有恐龙的森林</span><span>🍭 糖果做的城堡</span><span>🚀 我住在月亮上</span><span>🐼 和熊猫一起野餐</span></div>
+    <div class="scroll-hint">看看怎么玩<i>⌄</i></div>
+  </div>
+</header>
+
+<main>
+  <!-- ================= 第二屏：说一句，长一步 ================= -->
+  <section class="how" id="how"><div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">怎么玩</span>
+      <h2 class="fun">说一句，世界就<em>长一步</em></h2>
+      <p>不用画画，也不用打字。看看 6 岁的朵朵是怎么搭出她的动物园的 👇</p>
+    </div>
+    <div class="demo">
+      <div class="chat" id="chat"><h4><span class="dot"></span>朵朵正在说</h4></div>
+      <div class="screen">
+        <div class="empty">🌌 这里还什么都没有…</div>
+        <div class="layer" id="layer"></div>
+        <div class="card" id="card"><b>🦁 狮子</b><em>💡 只有公狮子才有大鬃毛</em><small>点这里，知道更多（1/3）</small></div>
+      </div>
+    </div>
+    <div class="steps" id="steps">
+      <div class="step"><span class="n fun">1</span><div><h5 class="fun">说</h5><p>按住话筒，说出你想要的世界</p></div></div>
+      <div class="step"><span class="n fun">2</span><div><h5 class="fun">长出来</h5><p>你说的东西，一样一样长出来</p></div></div>
+      <div class="step"><span class="n fun">3</span><div><h5 class="fun">改一改</h5><p>"要红色的！""爬到树上！"</p></div></div>
+      <div class="step"><span class="n fun">4</span><div><h5 class="fun">点一点</h5><p>动物会动，还会讲小知识</p></div></div>
+    </div>
+  </div></section>
+
+  <!-- ================= 示例 ================= -->
+  <section class="examples" id="examples"><div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">从一句话开始</span>
+      <h2 class="fun">看看小朋友们搭的世界</h2>
+      <p>点一个进去逛逛，或者照着说一遍，变成你自己的</p>
+    </div>
+    <div class="row">
+      <div class="ex"><div class="pic" style="background-image:url(assets/zoo_c.png)"><span class="tag">🦁 动物园</span><span class="by">朵朵 6 岁</span></div>
+        <div class="body"><p class="said">"我想要一个动物园，狮子要戴红帽子，猴子爬到树上！"</p>
+          <div class="learn"><span>认识动物</span><span>描述颜色</span><span>上下前后</span></div>
+          <div class="go">进去逛逛 →<span>点一点 6 样东西</span></div></div></div>
+      <div class="ex"><div class="pic" style="background-image:url(assets/sea_c.png)"><span class="tag">🐠 海边</span><span class="by">小米 5 岁</span></div>
+        <div class="body"><p class="said">"今天去海边玩，海里有好多小鱼，我和爸爸在沙滩上。"</p>
+          <div class="learn"><span>海洋生物</span><span>记录一天</span></div>
+          <div class="go">进去逛逛 →<span>鱼会一直游</span></div></div></div>
+      <div class="ex"><div class="pic" style="background-image:url(assets/city_c.png)"><span class="tag">🌃 陆家嘴夜景</span><span class="by">乐乐 7 岁</span></div>
+        <div class="body"><p class="said">"爸爸妈妈带我去看了陆家嘴夜景，有东方明珠，江上有船。"</p>
+          <div class="learn"><span>城市地标</span><span>白天和夜晚</span></div>
+          <div class="go">进去逛逛 →<span>楼会在夜里发光</span></div></div></div>
+    </div>
+  </div></section>
+
+  <!-- ================= 价值观 ================= -->
+  <section class="values" id="values"><div class="wrap">
+    <div class="sec-head"><span class="kicker">我们相信</span><h2 class="fun">每个孩子心里，都有一个宇宙</h2></div>
+    <div class="vgrid">
+      <div class="v"><div class="ic">✨</div><h3 class="fun">想象力是孩子的</h3><p>世界里的每样东西，都来自孩子说的话。AI 只是小帮手，负责把它变出来，从不替孩子编故事。</p><span class="bg">🗣️</span></div>
+      <div class="v"><div class="ic">🔭</div><h3 class="fun">在玩里认识世界</h3><p>点一点动物、云朵、高楼，它们会动、会说话，还会讲一个真实好懂的小知识。</p><span class="bg">🌍</span></div>
+      <div class="v"><div class="ic">🏡</div><h3 class="fun">每个世界都被记住</h3><p>没有排行榜，也没有打卡。孩子的世界会被好好保存，想回来就回来，想给谁看由孩子决定。</p><span class="bg">💛</span></div>
+    </div>
+  </div></section>
+
+  <section class="final">
+    <h2 class="fun">你的小小宇宙<br/>正在等你创造<b>第一个世界</b></h2>
+    <a class="btn" href="#">🎙️ 开始创造</a>
+    <p class="credit">背景音乐：心声 Xinsheng by grrtyre · CC BY 4.0</p>
+  </section>
+</main>
+
+<script>
+// 滚出星空后，顶栏变成浅色
+addEventListener('scroll', () => document.getElementById('nav').classList.toggle('solid', scrollY > innerHeight * .75));
+// 星空
+const stars = document.getElementById('stars');
+for (let i = 0; i < 110; i++) { const s = document.createElement('i'); s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%'; s.style.animationDelay = -Math.random() * 3 + 's'; s.style.opacity = .3 + Math.random() * .7; stars.appendChild(s); }
+
+// 输入框里自动打出示例句子
+const lines = ['我想要一个有恐龙的森林…', '我住在月亮上，有一只兔子陪我…', '海里有好多小鱼，我和爸爸在沙滩上…'];
+const typed = document.getElementById('typed'); let li = 0, ci = 0, del = false;
+(function type() {
+  const t = lines[li]; typed.textContent = t.slice(0, ci);
+  if (!del && ci < t.length) ci++; else if (!del) { del = true; return setTimeout(type, 1600); }
+  else if (ci > 0) ci--; else { del = false; li = (li + 1) % lines.length; }
+  setTimeout(type, del ? 35 : 110);
+})();
+
+// 第二屏：滚动到时开始播放演示
+const chat = document.getElementById('chat'), layer = document.getElementById('layer'), card = document.getElementById('card'), steps = [...document.querySelectorAll('.step')];
+let timers = [];
+function play() {
+  timers.forEach(clearTimeout); timers = [];
+  chat.querySelectorAll('.msg').forEach(m => m.remove()); layer.classList.remove('show'); card.classList.remove('show');
+  const add = (cls, html) => { const m = document.createElement('div'); m.className = 'msg ' + cls; m.innerHTML = html; chat.appendChild(m); requestAnimationFrame(() => m.classList.add('show')); };
+  const on = i => steps.forEach((s, k) => s.classList.toggle('on', k === i));
+  [[300, () => { on(0); add('kid', '🧒 我想要一个动物园，有狮子、长颈鹿和大象！'); }],
+   [1900, () => { on(1); add('ai', '🪐 动物园来啦！它们都在等你～'); layer.classList.add('show'); }],
+   [4300, () => { on(2); add('kid', '🧒 狮子要戴红帽子！猴子爬到树上！'); }],
+   [5700, () => add('ai', '🪐 好神气的狮子！')],
+   [7300, () => { on(3); add('tap', '👆 点了一下狮子'); card.classList.add('show'); }],
+   [12500, play]].forEach(([t, f]) => timers.push(setTimeout(f, t)));
+}
+new IntersectionObserver(es => es.forEach(e => e.isIntersecting && play()), { threshold: .4 }).observe(document.getElementById('how'));
+</script>
+</body>
+</html>

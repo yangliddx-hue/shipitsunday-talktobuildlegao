@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>用说话搭世界 · 动效演示</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif; }
+  body { background: linear-gradient(180deg, #8fd3ff 0%, #c9ecff 45%, #fff3d6 100%); transition: background 2s; }
+  canvas { display: block; }
+
+  .brand { position: fixed; top: 22px; left: 26px; color: #1d3557; font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+  .brand small { display: block; font-weight: 500; font-size: 12px; opacity: .6; letter-spacing: 0; margin-top: 2px; }
+
+  .chip { position: fixed; top: 22px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,.85);
+    backdrop-filter: blur(8px); padding: 8px 18px; border-radius: 999px; font-size: 14px; color: #1d3557;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08); transition: opacity .4s; font-weight: 600; }
+
+  .panel { position: fixed; top: 80px; right: 24px; width: 270px; background: rgba(20,30,55,.82); color: #d6e4ff;
+    border-radius: 16px; padding: 14px 16px; font: 12px/1.7 "SF Mono", Menlo, monospace; box-shadow: 0 8px 30px rgba(0,0,0,.18);
+    backdrop-filter: blur(6px); }
+  .panel h4 { font: 700 12px "PingFang SC", sans-serif; color: #9fb7ff; margin-bottom: 8px; letter-spacing: 1px; }
+  .panel .line { opacity: 0; transform: translateX(10px); transition: all .35s; white-space: nowrap; }
+  .panel .line.show { opacity: 1; transform: none; }
+  .add { color: #7ee2a8; } .mod { color: #ffd166; } .ask { color: #c9a7ff; }
+
+  .stage { position: fixed; bottom: 34px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; align-items: center; width: min(720px, 92vw); }
+  .bubble { display: flex; align-items: center; gap: 12px; background: #fff; padding: 14px 20px; border-radius: 22px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.12); font-size: 20px; color: #22223b; min-height: 60px;
+    opacity: 0; transform: translateY(14px) scale(.96); transition: all .35s cubic-bezier(.2,1.4,.4,1); max-width: 100%; }
+  .bubble.show { opacity: 1; transform: none; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+  .kid .avatar { background: #ffe1c6; } .ai .avatar { background: #e8dcff; } .parent .avatar { background: #d4ecff; }
+  .kid { border: 3px solid #ffb877; } .ai { border: 3px solid #b892ff; } .parent { border: 3px solid #7cc2ff; }
+  .who { font-size: 12px; color: #888; display: block; margin-bottom: 2px; }
+  .wave { display: flex; gap: 3px; align-items: center; height: 22px; margin-left: 4px; }
+  .wave i { width: 4px; background: #ff9f4a; border-radius: 2px; animation: w .6s infinite ease-in-out; }
+  .wave i:nth-child(2){animation-delay:.1s}.wave i:nth-child(3){animation-delay:.2s}.wave i:nth-child(4){animation-delay:.3s}
+  @keyframes w { 0%,100%{height:5px} 50%{height:20px} }
+
+  .end { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(15,25,50,.55); backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none; transition: opacity 1s; text-align: center; color: #fff; }
+  .end.show { opacity: 1; pointer-events: auto; }
+  .end h1 { font-size: 44px; line-height: 1.5; font-weight: 800; }
+  .end h1 span { color: #ffd166; }
+  .end p { margin-top: 14px; opacity: .8; font-size: 16px; }
+  button { margin-top: 28px; font: 600 16px "PingFang SC", sans-serif; padding: 12px 30px; border-radius: 999px; border: none;
+    background: #ffd166; color: #1d3557; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+  .replay { position: fixed; bottom: 24px; right: 24px; margin: 0; padding: 8px 18px; font-size: 13px; background: rgba(255,255,255,.85); }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="brand">用说话搭世界<small>Lego with words · AI for Kids</small></div>
+<div class="chip" id="chip">🏝️ 这是小朋友的岛，现在还是空的</div>
+<div class="panel"><h4>AI 场景清单</h4><div id="log"></div></div>
+<div class="stage" id="stage"></div>
+<button class="replay" onclick="location.reload()">↻ 重播</button>
+<div class="end" id="end">
+  <div>
+    <h1>乐高让孩子<span>用手</span>搭世界<br/>我们让孩子<span>用嘴</span>搭世界</h1>
+    <p>说得越清楚，世界就越像你想的样子。可以拖动画面，继续逛逛这座岛。</p>
+    <button onclick="document.getElementById('end').classList.remove('show')">继续逛岛</button>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---------- 基础场景 ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 200);
+camera.position.set(12, 9, 14);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.6, 0);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.48;
+controls.minDistance = 6; controls.maxDistance = 30;
+
+const hemi = new THREE.HemisphereLight(0xdff3ff, 0xc9a77c, 1.2);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff1d6, 2.4);
+sun.position.set(8, 14, 6);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 });
+scene.add(sun);
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.85, ...extra });
+const mesh = (geo, m, shadow = true) => { const o = new THREE.Mesh(geo, m); o.castShadow = shadow; o.receiveShadow = true; return o; };
+
+// ---------- 小岛 ----------
+const world = new THREE.Group(); scene.add(world);
+const TOP = 0.65;
+const grass = mesh(new THREE.CylinderGeometry(6.2, 6.0, 0.3, 10), mat(0x8bd17c)); grass.position.y = 0.5; world.add(grass);
+const dirt = mesh(new THREE.CylinderGeometry(6.0, 4.8, 1.2, 10), mat(0xc08a5b)); dirt.position.y = -0.25; world.add(dirt);
+const rock = mesh(new THREE.ConeGeometry(4.8, 3.2, 10), mat(0x9c7653)); rock.position.y = -2.45; rock.rotation.x = Math.PI; world.add(rock);
+for (let i = 0; i < 14; i++) { // 草丛小点缀
+  const a = Math.random() * Math.PI * 2, r = 2 + Math.random() * 3.6;
+  const t = mesh(new THREE.ConeGeometry(0.12, 0.3, 4), mat(0x6fbf63)); t.position.set(Math.cos(a) * r, TOP + 0.1, Math.sin(a) * r); world.add(t);
+}
+
+// 云
+const clouds = [];
+for (let i = 0; i < 6; i++) {
+  const c = new THREE.Group();
+  for (let j = 0; j < 4; j++) {
+    const s = mesh(new THREE.IcosahedronGeometry(0.6 + Math.random() * 0.5, 0), mat(0xffffff), false);
+    s.position.set(j * 0.7, Math.random() * 0.3, Math.random() * 0.4); c.add(s);
+  }
+  c.position.set(-18 + i * 7, 5 + Math.random() * 3, -8 - Math.random() * 6);
+  scene.add(c); clouds.push(c);
+}
+
+// ---------- 动画系统 ----------
+const tweens = [];
+const ease = {
+  backOut: t => { const c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); },
+  inOut: t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+  bounce: t => { const n = 7.5625, d = 2.75;
+    if (t < 1 / d) return n * t * t; if (t < 2 / d) return n * (t -= 1.5 / d) * t + .75;
+    if (t < 2.5 / d) return n * (t -= 2.25 / d) * t + .9375; return n * (t -= 2.625 / d) * t + .984375; },
+};
+function tween(dur, fn, e = ease.inOut) {
+  return new Promise(res => tweens.push({ t: 0, dur, fn, e, res }));
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function grow(obj, dur = 0.9) {
+  obj.scale.setScalar(0.001); world.add(obj); burst(obj.position);
+  return tween(dur, k => obj.scale.setScalar(Math.max(0.001, k)), ease.backOut);
+}
+function drop(obj, dur = 1.0) {
+  const y = obj.position.y; world.add(obj);
+  return tween(dur, k => { obj.position.y = y + 4 * (1 - k); }, ease.bounce).then(() => burst(obj.position));
+}
+
+// 星星粒子
+const sparks = [];
+function burst(pos, n = 18) {
+  const colors = [0xffd166, 0xff8fab, 0x8bd3ff, 0xb8f28c];
+  for (let i = 0; i < n; i++) {
+    const p = mesh(new THREE.TetrahedronGeometry(0.09), new THREE.MeshBasicMaterial({ color: colors[i % 4], transparent: true }), false);
+    p.position.copy(pos).add(new THREE.Vector3(0, 0.4, 0));
+    p.userData.v = new THREE.Vector3((Math.random() - .5) * 5, Math.random() * 4 + 1.5, (Math.random() - .5) * 5);
+    p.userData.life = 1; scene.add(p); sparks.push(p);
+  }
+}
+
+// 音符
+const notes = [];
+function noteSprite() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'); g.font = 'bold 48px serif'; g.fillStyle = '#7b4dff'; g.textAlign = 'center'; g.fillText('♪', 32, 48);
+  return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true });
+}
+const noteMat = noteSprite();
+function sing(obj, count = 5) {
+  for (let i = 0; i < count; i++) setTimeout(() => {
+    const s = new THREE.Sprite(noteMat.clone()); s.scale.setScalar(0.5);
+    obj.getWorldPosition(s.position); s.position.y += 0.6;
+    s.userData = { life: 1, dx: (Math.random() - .5) * 0.8 }; scene.add(s); notes.push(s);
+  }, i * 260);
+}
+
+// 镜头
+function focus(target, camPos, dur = 1.6) {
+  const t0 = controls.target.clone(), c0 = camera.position.clone();
+  const t1 = new THREE.Vector3(...target), c1 = new THREE.Vector3(...camPos);
+  return tween(dur, k => { controls.target.lerpVectors(t0, t1, k); camera.position.lerpVectors(c0, c1, k); });
+}
+
+// ---------- 物件（低多边形，全部程序生成） ----------
+const POND = new THREE.Vector3(-1.8, TOP, 0.8);
+function makePond() {
+  const g = new THREE.Group(); g.position.copy(POND);
+  const w = mesh(new THREE.CylinderGeometry(1.9, 1.9, 0.08, 14), mat(0x4fb3ff, { roughness: 0.2, metalness: 0.1 })); w.position.y = 0.02; g.add(w);
+  for (let i = 0; i < 16; i++) {
+    const a = i / 16 * Math.PI * 2;
+    const s = mesh(new THREE.DodecahedronGeometry(0.22 + Math.random() * 0.1, 0), mat(0xb7b2a6));
+    s.position.set(Math.cos(a) * 2.05, 0.05, Math.sin(a) * 2.05); g.add(s);
+  }
+  const pad = mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.04, 9), mat(0x3e9c4a)); pad.position.set(0.3, 0.08, 0.2); g.add(pad);
+  return g;
+}
+const frogMat = mat(0x5cc95a);
+function makeFrog() {
+  const g = new THREE.Group();
+  const body = mesh(new THREE.SphereGeometry(0.45, 8, 6), frogMat); body.scale.set(1, 0.72, 1.05); body.position.y = 0.3; g.add(body);
+  for (const x of [-0.2, 0.2]) {
+    const eye = mesh(new THREE.SphereGeometry(0.15, 8, 6), frogMat); eye.position.set(x, 0.62, 0.2); g.add(eye);
+    const white = mesh(new THREE.SphereGeometry(0.1, 8, 6), mat(0xffffff)); white.position.set(x, 0.65, 0.3); g.add(white);
+    const pupil = mesh(new THREE.SphereGeometry(0.05, 6, 4), mat(0x111111)); pupil.position.set(x, 0.66, 0.39); g.add(pupil);
+  }
+  const cheek = mesh(new THREE.TorusGeometry(0.12, 0.03, 4, 10, Math.PI), mat(0x2d2d2d)); cheek.position.set(0, 0.3, 0.45); cheek.rotation.z = Math.PI; g.add(cheek);
+  g.rotation.y = 0.6;
+  return g;
+}
+const TREE = new THREE.Vector3(1.4, TOP, -1.6);
+function makeTree() {
+  const g = new THREE.Group(); g.position.copy(TREE);
+  const trunk = mesh(new THREE.CylinderGeometry(0.25, 0.4, 2.6, 7), mat(0x8b5a3c)); trunk.position.y = 1.3; g.add(trunk);
+  const leaf = mat(0x58b368);
+  [[0, 3.0, 0, 1.5], [0.8, 2.6, 0.3, 1.0], [-0.7, 2.7, -0.2, 1.1], [0.1, 3.9, 0, 1.0]].forEach(([x, y, z, r]) => {
+    const f = mesh(new THREE.IcosahedronGeometry(r, 0), leaf); f.position.set(x, y, z); g.add(f);
+  });
+  return g;
+}
+function makeTreehouse() {
+  const g = new THREE.Group(); g.position.copy(TREE).add(new THREE.Vector3(0.9, 2.2, 0.9));
+  const floor = mesh(new THREE.BoxGeometry(1.4, 0.1, 1.4), mat(0x9c6b43)); g.add(floor);
+  const box = mesh(new THREE.BoxGeometry(1.1, 0.9, 1.1), mat(0xffc46b)); box.position.y = 0.5; g.add(box);
+  const roof = mesh(new THREE.ConeGeometry(0.95, 0.7, 4), mat(0xe8576a)); roof.position.y = 1.3; roof.rotation.y = Math.PI / 4; g.add(roof);
+  const door = mesh(new THREE.BoxGeometry(0.35, 0.5, 0.02), mat(0x7a4a2b)); door.position.set(0, 0.35, 0.56); g.add(door);
+  const win = mesh(new THREE.BoxGeometry(0.25, 0.25, 0.02), mat(0xfff6c2, { emissive: 0xffe08a, emissiveIntensity: 0.4 })); win.position.set(0.56, 0.6, 0); win.rotation.y = Math.PI / 2; g.add(win);
+  for (let i = 0; i < 6; i++) { // 梯子
+    const r = mesh(new THREE.BoxGeometry(0.5, 0.06, 0.06), mat(0x9c6b43)); r.position.set(0, -0.3 - i * 0.35, 0.8); g.add(r);
+  }
+  return g;
+}
+function makeBridgePlanks() {
+  const planks = [];
+  for (let i = 0; i < 9; i++) {
+    const t = i / 8, x = -1.6 + t * 3.6;
+    const p = mesh(new THREE.BoxGeometry(0.36, 0.08, 0.9), mat(i % 2 ? 0xb07a4f : 0xc48b5c));
+    p.position.set(POND.x + x - 0.3, TOP + 0.15 + Math.sin(t * Math.PI) * 0.6, POND.z + 2.6);
+    p.rotation.z = Math.cos(t * Math.PI) * -0.5;
+    planks.push(p);
+  }
+  return planks;
+}
+function makeDog() {
+  const g = new THREE.Group(); const fur = mat(0xf2b45a), dark = mat(0x7a4a2b);
+  const body = mesh(new THREE.BoxGeometry(0.9, 0.45, 0.45), fur); body.position.y = 0.45; g.add(body);
+  const head = mesh(new THREE.BoxGeometry(0.42, 0.4, 0.4), fur); head.position.set(0.55, 0.75, 0); g.add(head);
+  const nose = mesh(new THREE.BoxGeometry(0.14, 0.14, 0.18), dark); nose.position.set(0.8, 0.7, 0); g.add(nose);
+  for (const z of [-0.18, 0.18]) {
+    const ear = mesh(new THREE.BoxGeometry(0.1, 0.25, 0.12), dark); ear.position.set(0.5, 0.95, z); g.add(ear);
+    for (const x of [-0.3, 0.3]) { const leg = mesh(new THREE.BoxGeometry(0.12, 0.3, 0.12), fur); leg.position.set(x, 0.15, z); g.add(leg); }
+  }
+  const tail = mesh(new THREE.BoxGeometry(0.08, 0.35, 0.08), fur); tail.position.set(-0.5, 0.7, 0); tail.rotation.z = 0.6; g.add(tail);
+  g.userData.tail = tail;
+  return g;
+}
+function makePelicanBike() {
+  const g = new THREE.Group(); const metal = mat(0x2f6fde), black = mat(0x222222);
+  const wheels = [];
+  for (const x of [-0.55, 0.55]) {
+    const w = mesh(new THREE.TorusGeometry(0.35, 0.06, 6, 14), black); w.position.set(x, 0.38, 0); g.add(w); wheels.push(w);
+  }
+  const bar = (len, x, y, rz) => { const b = mesh(new THREE.CylinderGeometry(0.04, 0.04, len, 5), metal); b.position.set(x, y, 0); b.rotation.z = rz; g.add(b); };
+  bar(1.0, 0, 0.6, Math.PI / 2); bar(0.6, -0.25, 0.55, 0.6); bar(0.55, 0.45, 0.62, -0.4);
+  const white = mat(0xfafafa);
+  const body = mesh(new THREE.SphereGeometry(0.42, 8, 6), white); body.scale.set(1.1, 0.9, 0.85); body.position.set(-0.15, 1.15, 0); g.add(body);
+  const neck = mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.5, 6), white); neck.position.set(0.2, 1.55, 0); neck.rotation.z = -0.4; g.add(neck);
+  const head = mesh(new THREE.SphereGeometry(0.2, 8, 6), white); head.position.set(0.35, 1.82, 0); g.add(head);
+  const beak = mesh(new THREE.ConeGeometry(0.11, 0.85, 6), mat(0xffa53b)); beak.position.set(0.8, 1.72, 0); beak.rotation.z = -Math.PI / 2 - 0.2; g.add(beak);
+  for (const z of [-0.12, 0.12]) { const e = mesh(new THREE.SphereGeometry(0.04, 6, 4), black); e.position.set(0.45, 1.88, z); g.add(e); }
+  const wing = mesh(new THREE.SphereGeometry(0.3, 6, 4), mat(0xe6e6e6)); wing.scale.set(1.2, 0.5, 0.3); wing.position.set(-0.2, 1.15, 0.36); g.add(wing);
+  g.userData.wheels = wheels;
+  g.scale.setScalar(0.85);
+  return g;
+}
+
+// ---------- UI ----------
+const chip = document.getElementById('chip'), stage = document.getElementById('stage'), logEl = document.getElementById('log');
+const setChip = t => { chip.style.opacity = 0; setTimeout(() => { chip.textContent = t; chip.style.opacity = 1; }, 250); };
+const ROLES = { kid: ['🧒', '小朋友'], ai: ['🏝️', '小岛（AI）'], parent: ['👨', '爸爸'] };
+async function say(role, text, hold = 900) {
+  stage.innerHTML = '';
+  const b = document.createElement('div'); b.className = `bubble ${role}`;
+  b.innerHTML = `<div class="avatar">${ROLES[role][0]}</div><div><span class="who">${ROLES[role][1]}</span><span class="txt"></span></div>` + (role === 'kid' ? '<div class="wave"><i></i><i></i><i></i><i></i></div>' : '');
+  stage.appendChild(b); await sleep(30); b.classList.add('show');
+  const span = b.querySelector('.txt');
+  for (const ch of text) { span.textContent += ch; await sleep(role === 'kid' ? 85 : 60); }
+  b.querySelector('.wave')?.remove();
+  await sleep(hold);
+}
+async function log(cls, text) {
+  const d = document.createElement('div'); d.className = `line ${cls}`; d.textContent = text;
+  logEl.appendChild(d); await sleep(30); d.classList.add('show'); await sleep(260);
+}
+
+// ---------- 场景引用 ----------
+let frog, dog, pelican, pelicanOn = false, pelicanAngle = 0, followPelican = false;
+
+// ---------- 剧本 ----------
+async function run() {
+  await sleep(1600);
+  await focus([-0.5, 0.8, 0], [9, 7, 11], 1.4);
+
+  // 1 池塘 + 青蛙
+  setChip('🎙️ 正在听小朋友说话…');
+  await say('kid', '我想要一个大池塘，里面有一只会唱歌的青蛙！');
+  setChip('✨ 正在把话变成世界…');
+  await log('add', '+ pond { size: "big" }');
+  await log('add', '+ frog { action: "sing" }');
+  await focus([POND.x, 0.8, POND.z], [POND.x + 5, 5, POND.z + 6.5]);
+  await grow(makePond());
+  frog = makeFrog(); frog.position.set(POND.x + 0.3, TOP + 0.08, POND.z + 0.2);
+  await drop(frog);
+  sing(frog);
+  await sleep(1400);
+
+  // 2 改颜色 + 大树
+  setChip('🎙️ 不对？那就改！');
+  await say('kid', '青蛙要紫色的！池塘旁边还要一棵大树。');
+  setChip('✨ 修改中…');
+  await log('mod', '~ frog.color → "purple"');
+  await log('add', '+ tree { size: "big", near: "pond" }');
+  const from = frogMat.color.clone(), to = new THREE.Color(0xa267ff);
+  frog.scale.setScalar(1);
+  await tween(0.8, k => { frogMat.color.lerpColors(from, to, k); frog.scale.setScalar(1 + Math.sin(k * Math.PI) * 0.35); });
+  burst(frog.position, 12);
+  await focus([0, 1.6, -0.5], [7, 6.5, 9]);
+  await grow(makeTree(), 1.1);
+  await sleep(500);
+
+  // 3 AI 追问 → 树屋
+  setChip('💬 AI 只追问，不替孩子决定');
+  await log('ask', '? followUp: "用大树做什么？"');
+  await say('ai', '这棵大树好大呀，你想用它来做什么？', 600);
+  await say('kid', '我要给青蛙搭一个树上的家！');
+  setChip('✨ 正在搭建…');
+  await log('add', '+ treehouse { on: "tree", owner: "frog" }');
+  await focus([TREE.x + 0.6, 2.8, TREE.z + 0.6], [TREE.x + 5.5, 5.5, TREE.z + 7]);
+  await grow(makeTreehouse());
+  // 青蛙跳进新家
+  const p0 = frog.position.clone(), p1 = TREE.clone().add(new THREE.Vector3(0.9, 2.25, 1.5));
+  await tween(1.2, k => { frog.position.lerpVectors(p0, p1, k); frog.position.y += Math.sin(k * Math.PI) * 3; frog.rotation.y = 0.6 + k * Math.PI * 2; });
+  frog.rotation.y = 0.3;
+  burst(frog.position, 12); sing(frog, 4);
+  await sleep(1400);
+
+  // 4 桥 + 小狗
+  setChip('🎙️ 世界在一点点长大');
+  await say('kid', '再搭一座桥，让小狗也能过来玩！');
+  setChip('✨ 正在搭建…');
+  await log('add', '+ bridge { over: "pond" }');
+  await log('add', '+ dog { color: "yellow" }');
+  await focus([POND.x, 1, POND.z + 2.4], [POND.x + 3, 5, POND.z + 10]);
+  for (const p of makeBridgePlanks()) { grow(p, 0.5); await sleep(110); }
+  await sleep(500);
+  dog = makeDog(); dog.position.set(POND.x + 2.6, TOP + 0.05, POND.z + 3.6); dog.rotation.y = 2.4;
+  await drop(dog);
+  await sleep(900);
+
+  // 5 鹈鹕骑车逛岛
+  setChip('🚲 走进自己的世界');
+  await say('kid', '小鹈鹕，骑车带我逛逛！', 500);
+  pelican = makePelicanBike(); world.add(pelican); pelicanOn = true; pelicanAngle = Math.PI * 0.2;
+  burst(pelican.position);
+  await focus([0, 0.8, 0], [10, 8, 12], 1.2);
+  followPelican = true; await sleep(6500); followPelican = false;
+
+  // 6 邀请家人参观
+  setChip('👨‍👧 孩子当导游，邀请家人参观');
+  await focus([TREE.x + 0.8, 2.6, TREE.z + 0.8], [TREE.x + 4.5, 4.5, TREE.z + 6.5], 1.6);
+  await say('kid', '爸爸，我带你看看青蛙的家！', 500);
+  await say('parent', '为什么它住在树上呀？', 500);
+  sing(frog, 6);
+  await say('kid', '这样它唱歌的时候，小狗在桥上也能听见！', 1600);
+
+  // 收尾
+  stage.innerHTML = '';
+  setChip('🏝️ 这座岛，由孩子做主');
+  await focus([-0.3, 0.8, 0], [13, 10, 15], 2.2);
+  document.getElementById('end').classList.add('show');
+}
+
+// ---------- 主循环 ----------
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const tw = tweens[i]; tw.t += dt / tw.dur; const k = Math.min(tw.t, 1);
+    tw.fn(tw.e(k));
+    if (k >= 1) { tweens.splice(i, 1); tw.res(); }
+  }
+  world.position.y = Math.sin(t * 0.8) * 0.12;
+  clouds.forEach((c, i) => { c.position.x += dt * (0.3 + i * 0.05); if (c.position.x > 22) c.position.x = -22; });
+  for (let i = sparks.length - 1; i >= 0; i--) {
+    const p = sparks[i]; p.userData.v.y -= 9 * dt; p.position.addScaledVector(p.userData.v, dt);
+    p.rotation.x += dt * 6; p.userData.life -= dt * 1.2; p.material.opacity = Math.max(0, p.userData.life);
+    if (p.userData.life <= 0) { scene.remove(p); sparks.splice(i, 1); }
+  }
+  for (let i = notes.length - 1; i >= 0; i--) {
+    const s = notes[i]; s.position.y += dt * 1.1; s.position.x += Math.sin(t * 4 + i) * dt * 0.5 + s.userData.dx * dt;
+    s.userData.life -= dt * 0.55; s.material.opacity = Math.max(0, s.userData.life);
+    if (s.userData.life <= 0) { scene.remove(s); notes.splice(i, 1); }
+  }
+  if (dog) { dog.userData.tail.rotation.x = Math.sin(t * 14) * 0.6; }
+  if (frog) { frog.children[0].scale.y = 0.72 + Math.sin(t * 3) * 0.03; }
+  if (pelicanOn) {
+    pelicanAngle += dt * 0.55;
+    const r = 4.9, x = Math.cos(pelicanAngle) * r, z = Math.sin(pelicanAngle) * r;
+    pelican.position.set(x, TOP + Math.abs(Math.sin(t * 8)) * 0.04, z);
+    pelican.rotation.y = -pelicanAngle - Math.PI / 2 + Math.PI;
+    pelican.rotation.y = Math.atan2(-Math.cos(pelicanAngle), Math.sin(pelicanAngle)) + Math.PI / 2;
+    pelican.userData.wheels.forEach(w => w.rotation.z -= dt * 8);
+    if (followPelican) {
+      const wp = new THREE.Vector3(); pelican.getWorldPosition(wp);
+      controls.target.lerp(wp.clone().setY(1), 0.05);
+      const behind = new THREE.Vector3(Math.cos(pelicanAngle - 0.6) * 9, 4.5, Math.sin(pelicanAngle - 0.6) * 9);
+      camera.position.lerp(behind, 0.03);
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+});
+
+run();
+</script>
+</body>
+</html>

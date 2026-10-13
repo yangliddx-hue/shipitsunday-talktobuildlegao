@@ -1,0 +1,8 @@
+{
+  "name": "talk-to-build",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "NODE_USE_ENV_PROXY=1 node live/server.mjs"
+  }
+}

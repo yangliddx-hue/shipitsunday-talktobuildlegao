@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小小宇宙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@500;700;900&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #141b45; font-family: "Noto Sans SC", sans-serif; color: #fff; user-select: none; }
+  .fun { font-family: "ZCOOL KuaiLe", "Noto Sans SC", sans-serif; font-weight: 400; }
+  canvas { display: block; }
+
+  /* 开场标题：出现两秒后淡出 */
+  .intro { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none; z-index: 5; }
+  .intro h1 { font-size: clamp(64px, 10vw, 140px); letter-spacing: 8px; text-shadow: 0 10px 0 rgba(0,0,0,.2); animation: titleIn 1.1s cubic-bezier(.2,1.4,.4,1) both; }
+  .intro h1 span { background: linear-gradient(90deg, #ffd56b, #ff9ac2, #8fe3ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .intro p { font-size: clamp(22px, 2.6vw, 34px); margin-top: 10px; animation: titleIn 1.1s .25s cubic-bezier(.2,1.4,.4,1) both; }
+  .intro p b { color: #ffd56b; font-size: 1.3em; }
+  .intro.out { animation: fadeOut 1s forwards; }
+  @keyframes titleIn { from { opacity: 0; transform: translateY(30px) scale(.9); } }
+  @keyframes fadeOut { to { opacity: 0; transform: scale(1.08); } }
+
+  /* 角落里的小 logo（开场后出现） */
+  .corner { position: fixed; top: 20px; left: 24px; font-size: 22px; display: flex; align-items: center; gap: 10px; opacity: 0; transition: opacity .8s; z-index: 6; }
+  .corner.on { opacity: 1; }
+  .corner .p { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #ff7a59, #ffd56b); position: relative; }
+  .corner .p::after { content: ''; position: absolute; left: -6px; right: -6px; top: 11px; height: 7px; border: 3px solid #fff; border-radius: 50%; transform: rotate(-18deg); border-bottom-color: transparent; }
+  .parent { position: fixed; top: 18px; right: 22px; z-index: 6; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); color: #cdd5ff; font: 500 13px "Noto Sans SC";
+    border-radius: 999px; padding: 7px 14px; cursor: pointer; opacity: 0; transition: opacity .8s; }
+  .parent.on { opacity: 1; }
+
+  /* 星球名字标签 */
+  .labels { position: fixed; inset: 0; pointer-events: none; z-index: 4; }
+  .lab { position: absolute; transform: translate(-50%, 0); white-space: nowrap; text-align: center; transition: opacity .3s; }
+  .lab .name { display: inline-block; background: #fff; color: #1f2a44; border-radius: 999px; padding: 6px 14px; font: 700 15px "Noto Sans SC"; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+  .lab .who { display: block; margin-top: 4px; font-size: 12px; color: #c9cffb; }
+  .lab.plus .name { background: #ffd56b; font: 400 18px "ZCOOL KuaiLe"; padding: 8px 18px; }
+  .lab.hide { opacity: 0; }
+
+  /* 提示气泡：告诉孩子可以点 */
+  .hint { position: fixed; z-index: 6; transform: translate(-50%, -100%); background: #fff; color: #1f2a44; border-radius: 20px; padding: 10px 16px; font: 400 18px "ZCOOL KuaiLe";
+    box-shadow: 0 10px 30px rgba(0,0,0,.3); pointer-events: none; opacity: 0; transition: opacity .4s; white-space: nowrap; }
+  .hint::after { content: ''; position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); border: 10px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  .hint.on { opacity: 1; animation: nudge 1.4s infinite ease-in-out; }
+  @keyframes nudge { 50% { margin-top: -6px; } }
+
+  /* 底部：大话筒 */
+  .dock { position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; transition: opacity .8s; }
+  .dock.on { opacity: 1; }
+  .mic { width: 92px; height: 92px; border-radius: 50%; border: none; background: #ffd56b; font-size: 40px; cursor: pointer; position: relative; box-shadow: 0 8px 0 #e0a826, 0 18px 40px rgba(255,213,107,.35);
+    transition: transform .15s; }
+  .mic:active { transform: translateY(4px); box-shadow: 0 4px 0 #e0a826; }
+  .mic::before, .mic::after { content: ''; position: absolute; inset: -12px; border: 3px solid rgba(255,213,107,.7); border-radius: 50%; animation: ping 2.2s infinite; }
+  .mic::after { animation-delay: 1.1s; }
+  @keyframes ping { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.4); opacity: 0; } }
+  .dock .t { font: 400 18px "ZCOOL KuaiLe"; color: #e6e9ff; }
+
+  /* 飞入后的"进入世界"遮罩（原型里代替真正的世界页） */
+  .enter { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: #fff; opacity: 0; pointer-events: none; transition: opacity .5s; }
+  .enter.on { opacity: 1; pointer-events: auto; }
+  .enter img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .enter .back { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); border: none; background: #1f2a44; color: #fff; font: 800 16px "Noto Sans SC"; border-radius: 999px; padding: 10px 22px; cursor: pointer; z-index: 2; }
+  .enter .badge { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(31,42,68,.85); border-radius: 16px; padding: 10px 18px; font-size: 14px; z-index: 2; }
+  .enter .newbox { position: relative; z-index: 2; text-align: center; color: #1f2a44; }
+  .enter .newbox h2 { font-size: 46px; } .enter .newbox p { margin-top: 10px; color: #7a7060; font-size: 18px; }
+
+  /* 家长页（小抽屉） */
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 92vw); z-index: 12; background: #fffaf0; color: #1f2a44; padding: 28px 26px; transform: translateX(100%);
+    transition: transform .4s cubic-bezier(.2,1,.3,1); box-shadow: -10px 0 40px rgba(0,0,0,.3); overflow: auto; }
+  .drawer.on { transform: none; }
+  .drawer h3 { font-size: 26px; } .drawer .x { position: absolute; top: 20px; right: 20px; border: none; background: #eee; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; }
+  .drawer .s { margin-top: 10px; color: #7a7060; line-height: 1.7; }
+  .drawer .v { margin-top: 18px; padding: 16px; border-radius: 18px; }
+  .drawer .v:nth-of-type(1) { background: #ffe9d9; } .drawer .v:nth-of-type(2) { background: #e1f3e6; } .drawer .v:nth-of-type(3) { background: #e6e8ff; }
+  .drawer .v b { font: 400 19px "ZCOOL KuaiLe"; } .drawer .v p { margin-top: 4px; font-size: 14px; line-height: 1.7; color: #5f5a52; }
+  .drawer small { display: block; margin-top: 24px; color: #aaa; font-size: 11px; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.170.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div class="intro" id="intro"><div><h1 class="fun">小小<span>宇宙</span></h1><p class="fun">小小的你，也能创造 <b>大大的世界</b></p></div></div>
+<div class="corner fun" id="corner"><span class="p"></span>小小宇宙</div>
+<button class="parent" id="parentBtn">👨‍👩‍👧 给爸爸妈妈</button>
+<div class="labels" id="labels"></div>
+<div class="hint" id="hint"></div>
+<div class="dock" id="dock"><button class="mic" id="mic">🎙️</button><span class="t">说出你想要的世界</span></div>
+
+<div class="enter" id="enter"><button class="back" id="back">← 回到我的小小宇宙</button><img id="enterImg" alt="" /><div class="badge" id="enterBadge"></div><div class="newbox" id="newbox"></div></div>
+
+<div class="drawer" id="drawer">
+  <button class="x" id="closeDrawer">✕</button>
+  <h3 class="fun">写给爸爸妈妈</h3>
+  <p class="s">小小宇宙是一个让孩子用说话搭建 3D 世界的地方。孩子说一句，世界就长一步；点一点里面的东西，还能学到真实的小知识。</p>
+  <div class="v"><b>✨ 想象力是孩子的</b><p>世界里的每样东西都来自孩子说的话。AI 只负责把它变出来，从不替孩子编故事。</p></div>
+  <div class="v"><b>🔭 在玩里认识世界</b><p>动物、云朵、高楼都能点，会动、会说话，还会讲一个好懂的小知识。</p></div>
+  <div class="v"><b>🏡 每个世界都被记住</b><p>没有排行榜和打卡。孩子的世界会被好好保存，想给谁看由孩子决定。</p></div>
+  <small>背景音乐：心声 Xinsheng by grrtyre · CC BY 4.0</small>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ---------- 场景 ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+// 背景：深蓝到紫的渐变天幕
+{ const c = document.createElement('canvas'); c.width = 2; c.height = 256; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#141b45'); gr.addColorStop(.55, '#2e3a86'); gr.addColorStop(1, '#6f72b8'); g.fillStyle = gr; g.fillRect(0, 0, 2, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t; }
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, .1, 500);
+const HOME = new THREE.Vector3(0, 0, 22);
+camera.position.set(0, 0, 60); // 开场从远处推进来
+scene.add(new THREE.AmbientLight(0xb8c4ff, 1.1));
+const key = new THREE.DirectionalLight(0xfff1d6, 2.2); key.position.set(-8, 10, 12); scene.add(key);
+const rim = new THREE.DirectionalLight(0x9fb4ff, 1.4); rim.position.set(10, -4, -6); scene.add(rim);
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); layout(); });
+
+// ---------- 星空 + 星尘 ----------
+{ const n = 1400, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { const r = 80 + Math.random() * 120, a = Math.random() * 6.283, b = Math.acos(Math.random() * 2 - 1);
+    pos.set([r * Math.sin(b) * Math.cos(a), r * Math.sin(b) * Math.sin(a), r * Math.cos(b) - 40], i * 3);
+    const c = new THREE.Color().setHSL(.6 + Math.random() * .15, .6, .75 + Math.random() * .25); col.set([c.r, c.g, c.b], i * 3); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: .45, vertexColors: true, transparent: true, opacity: .9 }))); }
+const dust = []; // 近处飘动的小星星
+for (let i = 0; i < 40; i++) {
+  const m = new THREE.Mesh(new THREE.OctahedronGeometry(.08 + Math.random() * .1), new THREE.MeshBasicMaterial({ color: [0xffd56b, 0xff9ac2, 0x8fe3ff, 0xffffff][i % 4] }));
+  m.position.set((Math.random() - .5) * 40, (Math.random() - .5) * 22, (Math.random() - .5) * 12); m.userData.v = .2 + Math.random() * .4; scene.add(m); dust.push(m);
+}
+
+// ---------- 星球 ----------
+// 原型里用预先截好的世界画面做星球表面；接入产品后换成每个世界保存时的缩略图
+const WORLDS = [
+  { id: 'zoo', name: '🦁 戴帽子的狮子', who: '朵朵 6 岁', img: 'assets/zoo.png', tint: '#9fd68a', ring: '#ffd56b' },
+  { id: 'city', name: '🌃 陆家嘴夜景', who: '乐乐 7 岁', img: 'assets/city.png', tint: '#6f72b8', ring: '#ff9ac2' },
+  { id: 'sea', name: '🐠 海边的一天', who: '小米 5 岁', img: 'assets/sea.png', tint: '#4fb3ff', ring: '#8fe3ff' },
+];
+const loader = new THREE.TextureLoader();
+const planets = [];
+function makePlanet(w, r) {
+  const g = new THREE.Group();
+  const tex = loader.load(w.img); tex.colorSpace = THREE.SRGBColorSpace;
+  // 把截图"包"在星球正面（球面 UV 只取中间一段，避免被拉伸得太厉害）
+  const geo = new THREE.SphereGeometry(r, 48, 32, Math.PI * .25, Math.PI * 1.5, Math.PI * .12, Math.PI * .76);
+  const face = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tex, roughness: .7 }));
+  face.rotation.y = -Math.PI * .5;
+  const core = new THREE.Mesh(new THREE.SphereGeometry(r * .995, 40, 28), new THREE.MeshStandardMaterial({ color: w.tint, roughness: .8, flatShading: true }));
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(r * 1.18, 32, 24), new THREE.MeshBasicMaterial({ color: w.ring, transparent: true, opacity: .12, side: THREE.BackSide }));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(r * 1.45, r * .045, 8, 80), new THREE.MeshStandardMaterial({ color: w.ring, emissive: w.ring, emissiveIntensity: .35 }));
+  ring.rotation.set(Math.PI * .46, 0, -.18);
+  g.add(core, face, glow, ring);
+  g.userData = { w, r, face, ring, kind: 'world' };
+  return g;
+}
+function makePlus(r) {
+  const g = new THREE.Group();
+  const core = new THREE.Mesh(new THREE.SphereGeometry(r, 48, 32), new THREE.MeshStandardMaterial({ color: 0xffd56b, emissive: 0xffb03b, emissiveIntensity: .45, roughness: .5, flatShading: true }));
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(r * 1.35, 32, 24), new THREE.MeshBasicMaterial({ color: 0xffd56b, transparent: true, opacity: .14, side: THREE.BackSide }));
+  const bar = (w, h) => new THREE.Mesh(new THREE.BoxGeometry(w, h, r * .4), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: .4 }));
+  const a = bar(r * 1.0, r * .26), b = bar(r * .26, r * 1.0); a.position.z = b.position.z = r * .98;
+  g.add(core, glow, a, b);
+  g.userData = { kind: 'plus', r, glow };
+  return g;
+}
+const plus = makePlus(2.1); scene.add(plus);
+WORLDS.forEach((w, i) => { const p = makePlanet(w, [2.6, 2.9, 1.9][i]); scene.add(p); planets.push(p); });
+
+// 布局：中间是"创造新世界"，世界星球围着它；屏幕越窄越往中间收
+const SLOTS = [[-10.5, 2.2, -2], [10.5, 2.6, -3], [-6.5, -4.6, 1]];
+function layout() {
+  const k = Math.min(1, camera.aspect / 1.6);
+  planets.forEach((p, i) => { const [x, y, z] = SLOTS[i]; p.userData.home = new THREE.Vector3(x * k, y, z); p.position.copy(p.userData.home); });
+  plus.userData.home = new THREE.Vector3(0, -.4, 3); plus.position.copy(plus.userData.home);
+}
+layout();
+
+// ---------- 标签 ----------
+const labelsEl = document.getElementById('labels');
+const labelOf = new Map();
+[...planets, plus].forEach(p => {
+  const d = document.createElement('div'); d.className = 'lab' + (p === plus ? ' plus' : '');
+  d.innerHTML = p === plus ? '<span class="name">＋ 创造新世界</span>' : `<span class="name">${p.userData.w.name}</span><span class="who">${p.userData.w.who}</span>`;
+  labelsEl.appendChild(d); labelOf.set(p, d);
+});
+function placeLabels() {
+  for (const [p, d] of labelOf) {
+    const v = p.position.clone().add(new THREE.Vector3(0, -p.userData.r * 1.35, 0)).project(camera);
+    d.style.left = (v.x * .5 + .5) * innerWidth + 'px'; d.style.top = (-v.y * .5 + .5) * innerHeight + 'px';
+  }
+}
+
+// ---------- 交互：悬停变大，点击飞进去 ----------
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+let hover = null, flying = false;
+function pick(e) {
+  mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects([...planets, plus], true)[0]; if (!hit) return null;
+  let o = hit.object; while (o && !o.userData.kind) o = o.parent; return o;
+}
+addEventListener('pointermove', e => { if (flying) return; hover = pick(e); document.body.style.cursor = hover ? 'pointer' : ''; });
+addEventListener('click', e => { if (flying || !introDone) return; const p = pick(e); if (p) flyInto(p); });
+document.getElementById('mic').onclick = () => flyInto(plus);
+
+const tweens = [];
+const tween = (dur, fn, ease = t => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2) => new Promise(r => tweens.push({ t: 0, dur, fn, ease, r }));
+const look = new THREE.Vector3(0, 0, 0);
+async function flyInto(p) {
+  flying = true; hint.classList.remove('on'); labelsEl.style.opacity = 0;
+  const c0 = camera.position.clone(), l0 = look.clone(), target = p.position.clone();
+  const end = target.clone().add(new THREE.Vector3(0, 0, p.userData.r * 1.25));
+  const spin0 = p.rotation.y;
+  await tween(1.6, k => { camera.position.lerpVectors(c0, end, k); look.lerpVectors(l0, target, Math.min(1, k * 1.6)); p.rotation.y = spin0 + (-spin0 % 6.283) * k; });
+  // 进入世界（原型：显示该世界的画面；产品里这里切到 3D 世界）
+  const enter = document.getElementById('enter'), img = document.getElementById('enterImg'), newbox = document.getElementById('newbox'), badge = document.getElementById('enterBadge');
+  if (p === plus) { img.style.display = 'none'; badge.style.display = 'none'; newbox.innerHTML = '<h2 class="fun">🌌 一个新世界诞生了！</h2><p>按住话筒，说说你想要什么吧～</p>'; enter.style.background = 'linear-gradient(#cfeeff, #fff3d6)'; }
+  else { img.style.display = ''; img.src = p.userData.w.img; badge.style.display = ''; badge.textContent = `${p.userData.w.name} · ${p.userData.w.who}（原型：这里会进入真正的 3D 世界）`; newbox.innerHTML = ''; }
+  enter.classList.add('on');
+  enter.dataset.from = planets.indexOf(p);
+  flying = false;
+}
+document.getElementById('back').onclick = async () => {
+  document.getElementById('enter').classList.remove('on'); flying = true;
+  const c0 = camera.position.clone(), l0 = look.clone();
+  await tween(1.4, k => { camera.position.lerpVectors(c0, HOME, k); look.lerpVectors(l0, new THREE.Vector3(), k); });
+  labelsEl.style.opacity = 1; flying = false;
+};
+
+// ---------- 提示：告诉孩子可以点 ----------
+const hint = document.getElementById('hint');
+const HINTS = [[0, '点点看，去朵朵的动物园玩一玩！'], [-1, '点我，创造你自己的世界 ✨'], [1, '这是乐乐搭的夜景，进去看看～']];
+let hi = 0;
+function showHint() {
+  if (flying || document.getElementById('enter').classList.contains('on')) return;
+  const [idx, text] = HINTS[hi++ % HINTS.length], p = idx < 0 ? plus : planets[idx];
+  const v = p.position.clone().add(new THREE.Vector3(0, p.userData.r * 1.3, 0)).project(camera);
+  hint.style.left = (v.x * .5 + .5) * innerWidth + 'px'; hint.style.top = (-v.y * .5 + .5) * innerHeight + 'px';
+  hint.textContent = text; hint.classList.add('on');
+  setTimeout(() => hint.classList.remove('on'), 3200);
+}
+
+// ---------- 开场 ----------
+let introDone = false;
+(async () => {
+  labelsEl.style.opacity = 0;
+  planets.forEach(p => p.scale.setScalar(.001)); plus.scale.setScalar(.001);
+  await new Promise(r => setTimeout(r, 900));
+  const c0 = camera.position.clone();
+  tween(2.4, k => camera.position.lerpVectors(c0, HOME, k));
+  [plus, ...planets].forEach((p, i) => setTimeout(() => tween(.9, k => p.scale.setScalar(Math.max(.001, k)), t => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2), 700 + i * 220));
+  await new Promise(r => setTimeout(r, 2400));
+  document.getElementById('intro').classList.add('out');
+  await new Promise(r => setTimeout(r, 700));
+  ['corner', 'parentBtn', 'dock'].forEach(id => document.getElementById(id).classList.add('on'));
+  labelsEl.style.transition = 'opacity .8s'; labelsEl.style.opacity = 1; introDone = true;
+  setTimeout(showHint, 800); setInterval(showHint, 4800);
+})();
+
+// 家长抽屉
+document.getElementById('parentBtn').onclick = () => document.getElementById('drawer').classList.add('on');
+document.getElementById('closeDrawer').onclick = () => document.getElementById('drawer').classList.remove('on');
+
+// ---------- 主循环 ----------
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+  for (let i = tweens.length - 1; i >= 0; i--) { const w = tweens[i]; w.t += dt / w.dur; const k = Math.min(w.t, 1); w.fn(w.ease(k)); if (k >= 1) { tweens.splice(i, 1); w.r(); } }
+  planets.forEach((p, i) => {
+    if (!flying && p.userData.home) p.position.y = p.userData.home.y + Math.sin(t * .7 + i * 2) * .35;
+    p.userData.ring.rotation.z += dt * .15;
+    if (!flying) p.rotation.y = Math.sin(t * .25 + i) * .35;                 // 轻轻左右转，正面一直朝向孩子
+    const want = hover === p ? 1.12 : 1; if (introDone) p.scale.setScalar(p.scale.x + (want - p.scale.x) * .15);
+  });
+  plus.rotation.y = Math.sin(t * .8) * .12; plus.rotation.x = Math.sin(t * .6) * .06; // 轻轻晃，"＋"始终朝向孩子
+  if (plus.userData.home && !flying) plus.position.y = plus.userData.home.y + Math.sin(t * 1.1) * .2;
+  plus.userData.glow.scale.setScalar(1 + Math.sin(t * 2.4) * .08);
+  if (introDone) { const want = hover === plus ? 1.15 : 1; plus.scale.setScalar(plus.scale.x + (want - plus.scale.x) * .15); }
+  dust.forEach(d => { d.position.y += d.userData.v * dt; d.rotation.y += dt; if (d.position.y > 12) d.position.y = -12; });
+  const inWorld = document.getElementById('enter').classList.contains('on');
+  if (!flying && introDone && !inWorld) { // 鼠标轻微视差，让宇宙有纵深感
+    camera.position.x += (HOME.x + mouse.x * 1.2 - camera.position.x) * .03;
+    camera.position.y += (HOME.y + mouse.y * .6 - camera.position.y) * .03;
+  }
+  camera.lookAt(look);
+  placeLabels();
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>
