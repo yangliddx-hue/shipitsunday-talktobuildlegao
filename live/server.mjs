@@ -18,8 +18,8 @@ if (existsSync(ENV_FILE)) {
 // project.env 里可写 PROXY=http://127.0.0.1:7897 覆盖
 if (process.env.PROXY) process.env.HTTPS_PROXY = process.env.HTTP_PROXY = process.env.PROXY;
 const PORT = process.env.PORT || 5174;
-const MODEL = process.env.MODEL || 'aws/anthropic/bedrock-claude-opus-5-5';
-const BASE = (process.env.BASE_URL || 'https://inference-api.nvidia.com/v1').replace(/\/$/, '');
+const MODEL = process.env.MODEL || 'your-approved-model';
+const BASE = (process.env.BASE_URL || 'https://your-approved-provider.example/v1').replace(/\/$/, '');
 const KEY = process.env.ANTHROPIC_API_KEY || process.env.API_KEY;
 
 const ASSETS = ['lion', 'tiger', 'crocodile', 'monkey', 'gorilla', 'ostrich', 'elephant', 'giraffe', 'zebra', 'penguin', 'bear', 'rabbit', 'fence', 'cage', 'pond', 'frog', 'tree', 'house', 'dog', 'cat', 'flower', 'rock', 'mountain', 'fish', 'bird', 'person', 'car', 'sun', 'moon', 'cloud', 'star', 'rainbow', 'lollipop', 'mushroom'];
